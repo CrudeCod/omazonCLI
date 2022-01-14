@@ -1,5 +1,6 @@
 import java.io.File;
 import java.util.Scanner;
+import java.util.Locale.Category;
 public class Main {
     public static boolean loggedIn=false;
     public static boolean selling=false;
@@ -15,6 +16,7 @@ public class Main {
             System.out.println("\t\t\t\t 1. Sell product");
             System.out.println("\t\t\t\t 2. Buy product");
             System.out.println("\t\t\t\t 3. List products");
+            System.out.println("\t\t\t\t 4. Browse by category");
             System.out.println("\t\t\t\t 5. Check balance");
             System.out.println("\n\t\t\t\t 9. Log out");
             System.out.println("\t\t\t\t 0. EXIT");
@@ -24,7 +26,9 @@ public class Main {
                 selling=true;
                 sell();
             }else 
-            
+            if (answer.equals("4")) {
+                browse_by_category();
+            } else
             if(answer.equals("9")){
                 loggedIn=false;
                 greetingscreen();
@@ -70,13 +74,14 @@ public class Main {
         for(File fileEntry : folder.listFiles()){
             User u = (User) User.ReadFromFile(fileEntry.getAbsolutePath());
             if(username.equals(u.getUsername()) && password.equals(u.getPassword())) {
-                    loggedIn=true;
-                    return u;
+                loggedIn=true;
+                return u;
             }else{
                 System.out.println("Wrong username or password!");
                 loggedIn=false;
             }
         }
+        greetingscreen();
         return blankUser;
     }
     public static void register(){
@@ -131,6 +136,7 @@ public class Main {
             System.out.println("\t\t\t\t 0. Exit");
             System.out.println("\t\t\t\t**==============================================================**");
             String answer = s.next();
+
             if(answer.equals("1")){
                 String productName;
                 String description;
@@ -238,6 +244,29 @@ public class Main {
                 System.exit(0);
             }
 
+        }
+    }
+    private static void browse_by_category() {
+        Scanner s = new Scanner(System.in);
+        File folder = new File("Testu\\PRODUCTS");
+        System.out.println("\t\t\t\t**==============================================================**");
+        System.out.println("\t\t\t\tCategories:");
+        System.out.println("\t\t\t\t 1. Sports and Outdoor");
+        System.out.println("\t\t\t\t 2. Games and Hobbies");
+        System.out.println("\t\t\t\t 3. Machines and Gadgets");
+        System.out.println("\t\t\t\t 4. Fashion and Accessories (men)");
+        System.out.println("\t\t\t\t 5. Fashion and Accessories (women)");
+        System.out.println("\t\t\t\t 6. Home and Living");
+        System.out.println("\t\t\t\t 9. Other");
+        System.out.println("\t\t\t\t 0. All");
+        System.out.println("\t\t\t\t**==============================================================**");
+        System.out.println("Choose a category for your products:");
+        String ans = s.next();
+        System.out.println("Product Name\t|\tPrice\t|\tStock left");
+        for(File fileEntry : folder.listFiles()){
+            Product p = Product.ReadFromFile(fileEntry.getAbsolutePath());
+            if(p.switchCategory(ans).equals(p.getCategory()))
+                System.out.println(p.getProductName()+"\t\t|\t"+p.getPrice()+"\t|\t"+(p.getStockCount()-p.getSalesCount()));
         }
     }
 }

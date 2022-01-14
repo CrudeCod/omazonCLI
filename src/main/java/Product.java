@@ -23,7 +23,7 @@ public class Product implements Serializable{
         this.price = price;
         this.stockCount = stockCount;
         this.salesCount = salesCount;
-        setCategory(category);
+        this.category = switchCategory(category);
 
         this.ownerName = ownerName;
      //   this.reviews = reviews;
@@ -120,32 +120,27 @@ public class Product implements Serializable{
     }
 
     //Category
-    public void setCategory(String choice){
+    public void setCategory(String category){
+        this.category=switchCategory(category);
+    }
+    public String switchCategory(String choice){
         switch (choice) {
             case "1":
-                this.category = "Sports and Outdoor";
-            break;
+                return "Sports and Outdoor";
             case "2":
-                this.category = "Games and Hobbies";
-            break;
+                return "Games and Hobbies";
             case "3":
-                this.category = "Machines and Gadgets";
-            break;
+                return "Machines and Gadgets";
             case "4":
-                this.category = "Fashion and Accessories (men)";
-            break;
+                return "Fashion and Accessories (men)";
             case "5":
-                this.category = "Fashion and Accessories (women)";
-            break;
+                return "Fashion and Accessories (women)";
             case "6":
-                this.category = "Home and Living";
-            break;
+                return "Home and Living";
             case "0":
-                this.category = "Other";
-            break;
+                return "Other";
             default:
-                this.category = "Other";
-            break;
+                return "all";
         }
     }
     public String getCategory() {
