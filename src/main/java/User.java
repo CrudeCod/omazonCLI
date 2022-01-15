@@ -1,11 +1,14 @@
+import connect.DB;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public class User implements Serializable{
+
+public class User implements Serializable {
+    private static final long serialVersionUID = 1L;
     //Basic info
     private String Username;
     private String Password;
@@ -15,47 +18,56 @@ public class User implements Serializable{
     private Product[] cartProduct;
     private String[] orderHistory;
     private int paymentPassword;
-
-    private int ProductCount=0;
+    private int ProductCount = 0;
     //Seller
     private double profit;
-    private Product[] productsList= new Product[100];
-  //  private Product[] productsList;
+    private Product[] productsList = new Product[100];
+    //  private Product[] productsList;
     private String[] transactionHistory;
     private String[] orderNotifications;
-    private static final long serialVersionUID = 1L;
+    private String[] shoppingCart = new String[100];
 
-    public User(String Username,String Password,String email) {
-        this.Username=Username;
-        this.Password=Password;
-        this.email=email;
-        this.balance=0;
+    private int productsInCart = 0;
+
+    public User() {
+    }
+
+    public User(String Username, String Password, String email) {
+        this.Username = Username;
+        this.Password = Password;
+        this.email = email;
+        this.balance = 0;
 
         //this.cartProduct=cartProduct;
-       // this.orderHistory=orderHistory;
-       // this.paymentPassword=paymentPassword;
-     //   this.profit=profit;
-      //  this.productsList=productsList;
-       // this.transactionHistory=transactionHistory;
-       // this.orderNotifications=orderNotifications;
-
-
+        // this.orderHistory=orderHistory;
+        // this.paymentPassword=paymentPassword;
+        //   this.profit=profit;
+        //  this.productsList=productsList;
+        // this.transactionHistory=transactionHistory;
+        // this.orderNotifications=orderNotifications;
     }
-    public static void SaveToFile(User u){   //add filepath as a parameter
-        try{
-            FileOutputStream fileOut = new FileOutputStream("Testu\\USERNAMES\\"+u.Username);
+
+    public static void initializeShoppingCart(String[] shoppingCart) {
+        for (int i = 0; i < shoppingCart.length; i++) {
+            shoppingCart[i] = "";
+        }
+    }
+
+    public static void SaveToFile(User u) {   //add filepath as a parameter
+        try {
+            FileOutputStream fileOut = new FileOutputStream("src/database/USERNAMES/" + u.Username);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(u);
             objectOut.close();
             System.out.println("Successfully written.");
 
 
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static User ReadFromFile(String filepath){
+    public static User ReadFromFile(String filepath) {
         try {
             FileInputStream fileIn = new FileInputStream(filepath);
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
@@ -63,13 +75,28 @@ public class User implements Serializable{
             //System.out.println("User successfully read from file.");
             objectIn.close();
             return u;
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
+    public int getProductsInCart() {
+        return productsInCart;
+    }
 
+    public void incrementProductsInCart() {
+        this.productsInCart++;
+    }
+
+    public String[] getShoppingCart() {
+
+        return this.shoppingCart;
+    }
+
+    public void setShoppingCart(String[] shoppingCart) {
+        this.shoppingCart = shoppingCart;
+    }
 
     // Basic info
     public String getUsername() {
@@ -95,8 +122,6 @@ public class User implements Serializable{
     public void setEmail(String email) {
         this.email = email;
     }
-
-
 
 
     //Customer
@@ -148,7 +173,7 @@ public class User implements Serializable{
     }
 
     public void setProductsList(Product p) {
-        this.productsList[ProductCount]=p;
+        this.productsList[ProductCount] = p;
     }
 
     public String[] getTransactionHistory() {
@@ -176,5 +201,100 @@ public class User implements Serializable{
         ProductCount = productCount;
     }
 
+    public void register(String username, String email, String password) {
+        String sql = "INSERT INTO Users(username,email, password) VALUES(?,?, ?)";
 
+        try (Connection conn = DB.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            pstmt.setString(2, email);
+            pstmt.setString(3, password);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public User login(String username, String password) {
+        String sql = "SELECT * FROM Users WHERE username = ? AND password = ?";
+        ResultSet rs = null;
+
+        try (Connection conn = DB.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                this.Username = rs.getString("username");
+                this.email = rs.getString("email");
+                this.Password = rs.getString("password");
+                this.balance = rs.getDouble("credit_balance");
+                return this;
+            } else {
+                System.out.println("Wrong username or password! Please try again.\n");
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+    }
+
+    //check username
+    public boolean checkUsername(String username) {
+        String sql = "SELECT username FROM Users WHERE username = ?";
+        boolean checkUser = false;
+        ResultSet rs = null;
+
+        try (Connection conn = DB.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            rs = pstmt.executeQuery();
+
+            if (rs.next())
+                checkUser = true;
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return checkUser;
+    }
+
+    public boolean checkEmail(String email) {
+        String sql = "SELECT email FROM Users WHERE email = ?";
+        boolean checkUser = false;
+        ResultSet rs = null;
+
+        try (Connection conn = DB.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, email);
+            rs = pstmt.executeQuery();
+
+            if (rs.next())
+                checkUser = true;
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return checkUser;
+    }
+
+    public void topUpBalance(double balance) {
+        this.balance += balance;
+
+        String sql = "UPDATE Users SET credit_balance = ? WHERE username = ?";
+
+        try (Connection conn = DB.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setDouble(1, this.balance);
+            pstmt.setString(2, this.getUsername());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }
