@@ -59,9 +59,7 @@ public class User implements Serializable {
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(u);
             objectOut.close();
-            System.out.println("Successfully written.");
-
-
+            //System.out.println("Successfully written.");
         } catch (Exception e) {
             e.printStackTrace();
         }

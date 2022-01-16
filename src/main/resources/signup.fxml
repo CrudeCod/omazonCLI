@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox layoutX="10.0" layoutY="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <AnchorPane style="-fx-background-color: E99C3A;">
+               <children>
+                  <ImageView fitHeight="400.0" fitWidth="222.0" style="-fx-background-color: E99C3A;">
+                     <image>
+                        <Image url="@template.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </AnchorPane>
+            <AnchorPane prefHeight="200.0">
+               <children>
+                  <AnchorPane prefHeight="400.0" prefWidth="458.0" style="-fx-background-color: D68B35;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <TextField fx:id="new_email" layoutX="211.0" layoutY="92.0" prefHeight="25.0" prefWidth="150.0" promptText="e-mail" />
+                        <TextField fx:id="new_username" layoutX="211.0" layoutY="135.0" prefHeight="25.0" prefWidth="150.0" promptText="new username" />
+                        <PasswordField fx:id="create_password" layoutX="211.0" layoutY="179.0" prefHeight="25.0" prefWidth="150.0" promptText="password" />
+                        <PasswordField fx:id="confirm_password" layoutX="211.0" layoutY="222.0" onAction="#Register_signup" prefHeight="25.0" prefWidth="150.0" promptText="confirm password" />
+                        <Button layoutX="116.0" layoutY="286.0" mnemonicParsing="false" onAction="#bacckbutton" prefHeight="30.0" prefWidth="60.0" text="Back" />
+                        <Button layoutX="202.0" layoutY="286.0" mnemonicParsing="false" onAction="#Register_signup" prefHeight="30.0" prefWidth="60.0" text="Sign Up" />
+                        <Label layoutX="17.0" layoutY="89.0" prefHeight="30.0" prefWidth="160.0" text="E-mail" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="17.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="email_taken" layoutX="212.0" layoutY="119.0" text="*E-mail already exists" textFill="RED" visible="false">
+                           <font>
+                              <Font size="9.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="17.0" layoutY="132.0" prefHeight="30.0" prefWidth="160.0" text="New Username" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="17.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="username_taken" layoutX="212.0" layoutY="161.0" text="*Username already exists" textFill="RED" visible="false">
+                           <font>
+                              <Font size="9.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="17.0" layoutY="176.0" prefHeight="30.0" prefWidth="160.0" text="Password" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="17.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="password_blank" layoutX="211.0" layoutY="206.0" text="*Password cannot be blank" textFill="RED" visible="false">
+                           <font>
+                              <Font size="9.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="17.0" layoutY="219.0" prefHeight="30.0" prefWidth="160.0" text="Comfirm Password" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="17.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="password_not_match" layoutX="211.0" layoutY="249.0" text="*Passwords didn't match, try again" textFill="RED" visible="false">
+                           <font>
+                              <Font size="9.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>
