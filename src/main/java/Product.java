@@ -1,15 +1,11 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.Arrays;
 
+
+import java.io.*;
+import java.util.Arrays;
+import java.util.regex.*;
 public class Product implements Serializable{
     //----------------------------------\\
-    @Serial
+    //@Serial
     private static final long serialVersionUID = 1L;
     //----------------------------------\\
     private String productName;
@@ -23,7 +19,7 @@ public class Product implements Serializable{
 
     private String ownerName;
 
-    static File Productfolder = new File("src/database/PRODUCTS");
+    File Productfolder = new File("src/database/PRODUCTS");
     //----------------------------------\\
     public Product(String productName, String description, Double price, int stockCount, int salesCount,String category, String ownerName) {
         this.productName = productName;
@@ -32,7 +28,7 @@ public class Product implements Serializable{
         this.price = price;
         this.stockCount = stockCount;
         this.salesCount = salesCount;
-        this.category=category;
+        setCategory(category);
 
         this.ownerName = ownerName;
      //   this.reviews = reviews;
@@ -66,12 +62,12 @@ public class Product implements Serializable{
 
     public void putIntoCart(User user){
         String[] newShoppingCart = new String[100];
-        User.initializeShoppingCart(newShoppingCart);
         for(int i=0; i<user.getShoppingCart().length;i++){
             newShoppingCart[i]=user.getShoppingCart()[i];
         }
         newShoppingCart[user.getProductsInCart()]=this.getProductName();
         user.setShoppingCart(newShoppingCart);
+        user.incrementProductsInCart();
         User.SaveToFile(user);
     }
 
@@ -95,9 +91,6 @@ public class Product implements Serializable{
 
     public Product[] sortAZ(Boolean descending){//if in case you want to sort it in descending order
         int i = 0;
-        if(Productfolder==null){
-            Productfolder = new File("src/database/PRODUCTS");
-        }
         int length = Productfolder.listFiles().length;
         Product[] Parr = new Product[length];
         for(File fileEntry : Productfolder.listFiles()){
@@ -117,13 +110,38 @@ public class Product implements Serializable{
         }
         return Parr;
     }
+    @SuppressWarnings("empty-statement")
+    public void SearchForProduct(String productOrSellerName){
+        int i = 0;
+        int length = Productfolder.listFiles().length;
+        String[] productNameList = new String[length];
+        String[] sellerNameList = new String[length];
+        String str=productOrSellerName.trim();
+        for(File fileEntry : Productfolder.listFiles()){
+            Product k = (Product) Product.ReadFromFile(fileEntry.getAbsolutePath());
+            productNameList[i] = k.getProductName();
+            sellerNameList[i]=k.getOwnerName();
+            i++;
+        }
+        for(int l=0; l<productNameList.length-1;l++){
+            if(productNameList[l].equalsIgnoreCase(str)){
+            
+                System.out.println("Product: "+ productName);
+            }else if(sellerNameList[l].equalsIgnoreCase(str))
+                System.out.println("Seller: "+ownerName);
+            else{
+                System.out.println("Product or Seller Not Found");
+            }
+                
+        }
+
+            
+    }
+
 
 
     public Product[] displayCategory(String category, Boolean sortPrice){
         int i = 0;
-        if(Productfolder==null){
-            Productfolder = new File("src/database/PRODUCTS");
-        }
         int length = Productfolder.listFiles().length;
         Product[] Parr = new Product[length];
         for(File fileEntry : Productfolder.listFiles()){
@@ -145,9 +163,6 @@ public class Product implements Serializable{
 
     public Product[] sortPrice(Boolean descending){//if in case you want to sort it in descending order
         int i = 0;
-        if(Productfolder==null){
-            Productfolder = new File("src/database/PRODUCTS");
-        }
         int length = Productfolder.listFiles().length;
         Product[] Parr = new Product[length];
         for(File fileEntry : Productfolder.listFiles()){
@@ -253,7 +268,7 @@ public class Product implements Serializable{
     public String[] getReviews() {
         return reviews;
     }
-    //the getter and setter for reviews has to be changed later.
+
     public void setReviews(String[] reviews) {
         this.reviews = reviews;
     }
@@ -276,14 +291,14 @@ public class Product implements Serializable{
     //Category
     public void setCategory(String choice){
         switch (choice) {
-            case "1" -> this.category = "Sports and Outdoor";
-            case "2" -> this.category = "Games and Hobbies";
-            case "3" -> this.category = "Machines and Gadgets";
-            case "4" -> this.category = "Fashion and Accessories (men)";
-            case "5" -> this.category = "Fashion and Accessories (women)";
-            case "6" -> this.category = "Home and Living";
-            case "0" -> this.category = "Other";
-            default -> this.category = "Other";
+            case "1" : this.category = "Sports and Outdoor";
+            case "2" : this.category = "Games and Hobbies";
+            case "3" : this.category = "Machines and Gadgets";
+            case "4" : this.category = "Fashion and Accessories (men)";
+            case "5" : this.category = "Fashion and Accessories (women)";
+            case "6" : this.category = "Home and Living";
+            case "0" : this.category = "Other";
+            default : this.category = "Other";
         }
     }
     public String getCategory() {

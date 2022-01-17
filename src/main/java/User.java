@@ -6,23 +6,22 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
-    //Basic info
+    // Basic info
     private String Username;
     private String Password;
     private String email;
-    //Customer
+    // Customer
     private double balance;
     private Product[] cartProduct;
     private String[] orderHistory;
     private int paymentPassword;
     private int ProductCount = 0;
-    //Seller
+    // Seller
     private double profit;
     private Product[] productsList = new Product[100];
-    //  private Product[] productsList;
+    // private Product[] productsList;
     private String[] transactionHistory;
     private String[] orderNotifications;
     private String[] shoppingCart = new String[100];
@@ -38,11 +37,11 @@ public class User implements Serializable {
         this.email = email;
         this.balance = 0;
 
-        //this.cartProduct=cartProduct;
+        // this.cartProduct=cartProduct;
         // this.orderHistory=orderHistory;
         // this.paymentPassword=paymentPassword;
-        //   this.profit=profit;
-        //  this.productsList=productsList;
+        // this.profit=profit;
+        // this.productsList=productsList;
         // this.transactionHistory=transactionHistory;
         // this.orderNotifications=orderNotifications;
     }
@@ -53,13 +52,14 @@ public class User implements Serializable {
         }
     }
 
-    public static void SaveToFile(User u) {   //add filepath as a parameter
+    public static void SaveToFile(User u) { // add filepath as a parameter
         try {
             FileOutputStream fileOut = new FileOutputStream("src/database/USERNAMES/" + u.Username);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(u);
             objectOut.close();
-            //System.out.println("Successfully written.");
+            System.out.println("Successfully written.");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -70,7 +70,7 @@ public class User implements Serializable {
             FileInputStream fileIn = new FileInputStream(filepath);
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
             User u = (User) objectIn.readObject();
-            //System.out.println("User successfully read from file.");
+            // System.out.println("User successfully read from file.");
             objectIn.close();
             return u;
         } catch (Exception e) {
@@ -121,8 +121,7 @@ public class User implements Serializable {
         this.email = email;
     }
 
-
-    //Customer
+    // Customer
 
     public double getBalance() {
         return balance;
@@ -156,7 +155,7 @@ public class User implements Serializable {
         this.paymentPassword = paymentPassword;
     }
 
-    //Seller
+    // Seller
 
     public double getProfit() {
         return profit;
@@ -190,7 +189,6 @@ public class User implements Serializable {
         this.orderNotifications = orderNotifications;
     }
 
-
     public int getProductCount() {
         return ProductCount;
     }
@@ -200,10 +198,10 @@ public class User implements Serializable {
     }
 
     public void register(String username, String email, String password) {
-        String sql = "INSERT INTO Users(username,email, password) VALUES(?,?, ?)";
+        String sql = "INSERT INTO Users(username, email, password) VALUES(?,?,?)";
 
         try (Connection conn = DB.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
             pstmt.setString(2, email);
             pstmt.setString(3, password);
@@ -218,7 +216,7 @@ public class User implements Serializable {
         ResultSet rs = null;
 
         try (Connection conn = DB.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
             pstmt.setString(2, password);
             rs = pstmt.executeQuery();
@@ -240,14 +238,14 @@ public class User implements Serializable {
         return null;
     }
 
-    //check username
+    // check username
     public boolean checkUsername(String username) {
         String sql = "SELECT username FROM Users WHERE username = ?";
         boolean checkUser = false;
         ResultSet rs = null;
 
         try (Connection conn = DB.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
             rs = pstmt.executeQuery();
 
@@ -267,7 +265,7 @@ public class User implements Serializable {
         ResultSet rs = null;
 
         try (Connection conn = DB.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, email);
             rs = pstmt.executeQuery();
 
@@ -287,9 +285,67 @@ public class User implements Serializable {
         String sql = "UPDATE Users SET credit_balance = ? WHERE username = ?";
 
         try (Connection conn = DB.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setDouble(1, this.balance);
             pstmt.setString(2, this.getUsername());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void updateAccount(String username, String email, String password) {
+
+    }
+
+    public void updateUsername(String username) {
+        String sql = "UPDATE Users SET username = ? WHERE username = ?";
+
+        try (Connection conn = DB.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            pstmt.setString(2, this.getUsername());
+            this.setUsername(username);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void updatePassword(String password) {
+        String sql = "UPDATE Users SET password = ? WHERE username = ?";
+
+        try (Connection conn = DB.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, password);
+            pstmt.setString(2, this.getUsername());
+            this.setPassword(password);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void updateEmail(String email) {
+        String sql = "UPDATE Users SET email = ? WHERE username = ?";
+
+        try (Connection conn = DB.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, email);
+            pstmt.setString(2, this.getUsername());
+            this.setPassword(email);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void delete() {
+        String sql = "DELETE FROM Users WHERE username = ?";
+
+        try (Connection conn = DB.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, this.getUsername());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());

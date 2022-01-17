@@ -6,9 +6,9 @@ public class Main {
     public static boolean selling = false;
     public static boolean checkingShoppingCart = false;
     public static boolean checkBalance = false;
+    public static boolean managingAccount = false;
     public static User activeUser = null;
 
-    //todo: implement categories(!)
     public static void main(String[] args) {
 
         Scanner s = new Scanner(System.in);
@@ -17,10 +17,10 @@ public class Main {
             if (!loggedIn) {
                 greetingScreen();
             } else {
-//                System.out.println(activeUser.getUsername() + " is logged in.\n");
+                // System.out.println(activeUser.getUsername() + " is logged in.\n");
                 mainscreen();
                 Product prod = Product.ReadFromFile("src/database/PRODUCTS/Pencil");
-                //todo: fix the shopping cart
+                // todo: fix the shopping cart
                 // prod.putIntoCart(activeUser);
                 System.out.println("\t\t\t\t**==============================================================**");
                 System.out.println("\t\t\t\t Current user: " + activeUser.getUsername() + "!");
@@ -29,7 +29,7 @@ public class Main {
                 System.out.println("\t\t\t\t 3. List products");
                 System.out.println("\t\t\t\t 4. Check balance");
                 System.out.println("\t\t\t\t 5. Check shopping cart");
-                System.out.println("\t\t\t\t 6. User setting");
+                System.out.println("\t\t\t\t 6. Manage account");
                 System.out.println("\t\t\t\t 7. Log out");
                 System.out.println("\t\t\t\t 0. EXIT");
                 System.out.println("\t\t\t\t**==============================================================**");
@@ -43,6 +43,9 @@ public class Main {
                 } else if (answer.equals("5")) {
                     checkingShoppingCart = true;
                     shoppingCart();
+                } else if (answer.equals("6")) {
+                    managingAccount = true;
+                    manageAccount();
                 } else if (answer.equals("7")) {
                     loggedIn = false;
                     activeUser = null;
@@ -50,6 +53,7 @@ public class Main {
                     System.exit(0);
                 }
             }
+
         }
     }
 
@@ -110,6 +114,7 @@ public class Main {
         System.out.println("Please enter your password: ");
         password = s.next();
         System.out.println("Please enter your email: ");
+
         email = s.next();
 
         if (user.checkEmail(email)) {
@@ -117,9 +122,13 @@ public class Main {
             register();
         }
 
+        if (!checkEmailValidity(email)) {
+            System.out.println("Invalid email address");
+            register();
+        }
+
         user.register(username, email, password);
 
-        login();
     }
 
     public static void mainscreen() {
@@ -147,7 +156,7 @@ public class Main {
                 double price;
                 int stockCount;
                 int salescount = 0;
-                //todo: implement categories(!)
+
                 System.out.println("Please type the product name:");
                 productName = s.next();
                 System.out.println("Please type the product description:");
@@ -158,8 +167,7 @@ public class Main {
                 System.out.println("Please type the product stock count:");
                 stockCount = Integer.parseInt(s.next());
 
-
-                //category
+                // category
                 System.out.println("\t\t\t\t**==============================================================**");
                 System.out.println("\t\t\t\tCategories:");
                 System.out.println("\t\t\t\t 1. Sports and Outdoor");
@@ -172,10 +180,11 @@ public class Main {
                 System.out.println("\t\t\t\t**==============================================================**");
                 System.out.println("Choose a category for your products:");
                 category = s.next();
-                //-------------------------------//
-                Product createdProduct = new Product(productName, description, price, stockCount, salescount, category, activeUser.getUsername());
+                // -------------------------------//
+                Product createdProduct = new Product(productName, description, price, stockCount, salescount, category,
+                        activeUser.getUsername());
                 Product.SaveToFile(createdProduct);
-                User.SaveToFile(activeUser);
+//                User.SaveToFile(activeUser);
 
             }
             if (answer.equals("2")) {
@@ -184,9 +193,10 @@ public class Main {
 
                 for (File fileEntry : folder.listFiles()) {
                     Product p = Product.ReadFromFile(fileEntry.getAbsolutePath());
-                    if (p.getOwnerName().equals(activeUser.getUsername())) System.out.println(p.getProductName());
+                    if (p.getOwnerName().equals(activeUser.getUsername()))
+                        System.out.println(p.getProductName());
                 }
-//todo: implement categories(!)
+
             }
             if (answer.equals("3")) {
                 File folder = new File("src/database/PRODUCTS");
@@ -195,7 +205,8 @@ public class Main {
                 String ans;
                 for (File fileEntry : folder.listFiles()) {
                     Product p = Product.ReadFromFile(fileEntry.getAbsolutePath());
-                    if (p.getOwnerName().equals(activeUser.getUsername())) System.out.println(p.getProductName());
+                    if (p.getOwnerName().equals(activeUser.getUsername()))
+                        System.out.println(p.getProductName());
                 }
                 System.out.println("\t\t\t\t =======WRITE THE FULL NAME OF PRODUCT TO EDIT=========");
                 System.out.println("\t\t\t\t Enter 0 to go back");
@@ -218,7 +229,8 @@ public class Main {
                             System.out.println("Please type the product stock count:");
                             stockCount = Integer.parseInt(s.next());
 
-                            System.out.println("\t\t\t\t**==============================================================**");
+                            System.out.println(
+                                    "\t\t\t\t**==============================================================**");
                             System.out.println("\t\t\t\tCategories:");
                             System.out.println("\t\t\t\t 1. Sports and Outdoor");
                             System.out.println("\t\t\t\t 2. Games and Hobbies");
@@ -227,7 +239,8 @@ public class Main {
                             System.out.println("\t\t\t\t 5. Fashion and Accessories (women)");
                             System.out.println("\t\t\t\t 6. Home and Living");
                             System.out.println("\t\t\t\t 0. Other");
-                            System.out.println("\t\t\t\t**==============================================================**");
+                            System.out.println(
+                                    "\t\t\t\t**==============================================================**");
                             System.out.println("Choose a category for your products:");
                             category = s.next();
 
@@ -263,22 +276,117 @@ public class Main {
             System.out.println("\t\t\t\t**==============================================================**");
             System.out.println("\t\t\t\t Below is the list of the products in your shopping cart!");
             System.out.println("\t\t\t\t**==============================================================**");
-            if (activeUser.getProductsInCart() == 0) {
-                System.out.println("\t\t\t\t There are no products at all yet. Add some to your cart.");
-            } else {
-                for (String string : activeUser.getShoppingCart()) {
+
+            for (String string : activeUser.getShoppingCart()) {
+                if (string == null) {
+
+                } else {
                     System.out.println(string);
                 }
-            }
 
+            }
+            System.out.println("\t\t\t\t Press 0 to go back");
+            answer = s.next();
+            if (answer.equals("0")) {
+                checkingShoppingCart = false;
+            } else {
+                shoppingCart();
+            }
         }
+    }
+
+    public static void manageAccount() {
+        while (loggedIn && managingAccount) {
+            Scanner s = new Scanner(System.in);
+            String answer;
+            System.out.println("\t\t\t\t**==============================================================**");
+            System.out.println("\t\t\t\t Editing the user: " + activeUser.getUsername() + "!");
+            System.out.println("\t\t\t\t 1. Edit username/password/email");
+            System.out.println("\t\t\t\t 2. Set payment password");
+            System.out.println("\t\t\t\t 3. Delete account");
+            System.out.println("\t\t\t\t 0. Go back");
+            System.out.println("\t\t\t\t**==============================================================**");
+            answer = s.next();
+
+            if (answer.equals("1")) {
+                System.out.println("\t\t\t\t 1. Edit username");
+                System.out.println("\t\t\t\t 2. Edit password");
+                System.out.println("\t\t\t\t 3. Edit email");
+                System.out.println("\t\t\t\t 0. Go back");
+                answer = s.next();
+                if (answer.equals("1")) {
+                    System.out.println("\t\t\t\t Enter a new username:");
+                    String newUsername = s.next();
+                    activeUser.updateUsername(newUsername);
+                    System.out.println("\t\t\t\t Username changed successfully!");
+                }
+                if (answer.equals("2")) {
+                    System.out.println("\t\t\t\t Please enter your password to confirm.");
+                    if (activeUser.getPassword().equals(s.next())) {
+                        System.out.println("\t\t\t\t Enter a new password");
+                        String newPassword = s.next();
+                        activeUser.updatePassword(newPassword);
+                        System.out.println("\t\t\t\t Password changed successfully!");
+                    } else {
+                        System.out.println("\t\t\t\t Wrong password! Please try again");
+                        manageAccount();
+                    }
+                }
+                if (answer.equals("3")) {
+                    System.out.println("\t\t\t\t Please enter your password to confirm.");
+                    if (activeUser.getPassword().equals(s.next())) {
+                        System.out.println("\t\t\t\t Please enter a new email address:");
+                        String newEmail = s.next();
+                        if (checkEmailValidity(newEmail)) {
+                            activeUser.updateEmail(newEmail);
+                            System.out.println("\t\t\t\t Email changed successfully!");
+                        } else {
+                            System.out.println("Email is not valid.");
+                        }
+                        manageAccount();
+                    } else {
+                        System.out.println("\t\t\t\t Wrong password! Please try again");
+                        manageAccount();
+                    }
+                }
+                if (answer.equals("0")) {
+                    manageAccount();
+                }
+            }
+            if (answer.equals("3")) {
+                System.out.println("\t\t\t\t Are you sure that you want to delete your account?");
+                System.out.println("\t\t\t\t Please enter your password to confirm.");
+                String password = s.next();
+                if (activeUser.getPassword().equals(password)) {
+                    activeUser.delete();
+                    System.out.println("Account deleted.");
+                    activeUser = null;
+                    loggedIn = false;
+                } else {
+                    System.out.println("\t\t\t\t Wrong password! Please try again");
+                    manageAccount();
+                }
+            }
+            if (answer.equals("0")) {
+                managingAccount = false;
+            }
+        }
+    }
+
+    public static boolean checkEmailValidity(String email) {
+        // todo: maybe expand the check later
+        if (email.contains("@") && email.contains(".com")) {
+            return true;
+        }
+        return false;
     }
 
     public static void checkBalance() {
         while (loggedIn && checkBalance) {
             Scanner s = new Scanner(System.in);
             System.out.println("\t\t\t\t**==============================================================**");
-            System.out.println("\t\t\t\tYour current account balance: " + String.format("%.2f", activeUser.getBalance()));
+            System.out
+                    .println("\t\t\t\tYour current account balance: " + String.format("%.2f", activeUser.getBalance()));
             System.out.println("\t\t\t\t 1. Top up account balance");
             System.out.println("\t\t\t\t 2. Go back");
             System.out.println("\t\t\t\t 0. Exit");
@@ -294,9 +402,9 @@ public class Main {
                     checkBalance();
                 }
                 System.out.println("Please enter your card expiry date: ");
-                String expiry= s.next();
+                String expiry = s.next();
                 System.out.println("Please enter your cvv number: ");
-                String cvv= s.next();
+                String cvv = s.next();
                 if (cvv.length() != 3) {
                     System.out.println("Please enter valid cvv number. (3 digit)");
                     checkBalance();
