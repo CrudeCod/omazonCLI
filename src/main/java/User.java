@@ -19,7 +19,7 @@ public class User implements Serializable {
     // Customer
     private double balance;
     private Product[] cartProduct;
-    private String[] orderHistory;
+    private OrderItem[] orderHistory;
     private int paymentPassword;
     private int ProductCount = 0;
     // Seller
@@ -143,11 +143,11 @@ public class User implements Serializable {
         this.cartProduct = cartProduct;
     }
 
-    public String[] getOrderHistory() {
+    public OrderItem[] getOrderHistory() {
         return orderHistory;
     }
 
-    public void setOrderHistory(String[] orderHistory) {
+    public void setOrderHistory(OrderItem[] orderHistory) {
         this.orderHistory = orderHistory;
     }
 
@@ -201,14 +201,15 @@ public class User implements Serializable {
         ProductCount = productCount;
     }
 
-    public void register(String username, String email, String password) {
-        String sql = "INSERT INTO Users(username, email, password) VALUES(?,?,?)";
+    public void register(String username, String email, String password, int paymentPassword) {
+        String sql = "INSERT INTO Users(username, email, password, payment_password) VALUES(?,?,?,?)";
 
         try (Connection conn = DB.connect();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
             pstmt.setString(2, email);
             pstmt.setString(3, password);
+            pstmt.setInt(4, paymentPassword);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -324,6 +325,20 @@ public class User implements Serializable {
             pstmt.setString(1, password);
             pstmt.setString(2, this.getUsername());
             this.setPassword(password);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void updatePaymentPassword(int password) {
+        String sql = "UPDATE Users SET payment_password = ? WHERE username = ?";
+
+        try (Connection conn = DB.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, password);
+            pstmt.setString(2, this.getUsername());
+            this.setPaymentPassword(password);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());

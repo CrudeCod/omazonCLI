@@ -307,4 +307,10 @@ public class Product implements Serializable{
         return category;
     }
     //----------------------------------\\
+
+    public void alterStockCount(int quantity) {
+        stockCount-=quantity;
+        salesCount++;
+        SaveToFile(this);
+    }
 }
