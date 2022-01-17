@@ -17,63 +17,28 @@
 
 <VBox prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
   <children>
-    <MenuBar VBox.vgrow="NEVER">
-      <menus>
-        <Menu mnemonicParsing="false" text="Profile">
-          <items>
-            <MenuItem mnemonicParsing="false" text="Profile" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Log Out" />
-            <MenuItem mnemonicParsing="false" text="Quit" />
-          </items>
-        </Menu>
-        <Menu mnemonicParsing="false" text="Market">
-          <items>
-                  <Menu mnemonicParsing="false" text="Buy">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Balance" />
-                        <MenuItem mnemonicParsing="false" text="Favourite" />
-                        <MenuItem mnemonicParsing="false" text="Cart" />
-                        <MenuItem mnemonicParsing="false" text="Purchase history" />
-                    </items>
-                  </Menu>
-                  <Menu mnemonicParsing="false" text="Sell">
-                    <items>
-                      <MenuItem mnemonicParsing="false" text="Manage product" />
-                    </items>
-                  </Menu>
-          </items>
-        </Menu>
-        <Menu mnemonicParsing="false" text="Help">
-          <items>
-            <MenuItem mnemonicParsing="false" text="About Omazon" />
-                  <MenuItem mnemonicParsing="false" text="Contact Us" />
-          </items>
-        </Menu>
-      </menus>
-    </MenuBar>
       <AnchorPane prefHeight="720.0" prefWidth="1440.0">
          <children>
             <AnchorPane prefWidth="240.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                <AnchorPane maxHeight="-Infinity" prefHeight="70.0" style="-fx-background-color: #121212;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <AnchorPane maxHeight="-Infinity" prefHeight="70.0" style="-fx-background-color: #121212;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <Button layoutX="169.0" layoutY="14.0" mnemonicParsing="false" onAction="#searchbutton" prefHeight="20.0" prefWidth="55.0" text="Search" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0" />
-                        <TextField fx:id="search" layoutX="14.0" layoutY="14.0" prefHeight="20.0" prefWidth="140.0" promptText="Search..." AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0" />
+                        <TextField fx:id="search" layoutX="14.0" layoutY="14.0" onAction="#searchbutton" prefHeight="20.0" prefWidth="140.0" promptText="Search..." AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0" />
                         <Hyperlink layoutX="14.0" layoutY="41.0" onAction="#toallproducts" text="Browse all category &gt;" textFill="YELLOW" underline="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="14.0" />
                      </children>
                   </AnchorPane>
-                <AnchorPane style="-fx-background-color: E99C3A;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="70.0">
+                  <AnchorPane style="-fx-background-color: E99C3A;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="70.0">
                      <children>
                         <Button layoutX="14.0" layoutY="332.0" mnemonicParsing="false" onAction="#logout" prefWidth="65.0" text="Log Out" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" />
-                        <ImageView fx:id="profpic" fitHeight="150.0" fitWidth="200.0" layoutX="14.0" layoutY="20.0" onMouseClicked="#toprofile" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0">
+                        <ImageView fx:id="user_dp_current" fitHeight="150.0" fitWidth="200.0" layoutX="14.0" layoutY="20.0" onMouseClicked="#toprofile" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0">
                            <image>
                               <Image url="@picture_placeholder.png" />
                            </image>
                         </ImageView>
-                        <Hyperlink layoutX="14.0" layoutY="209.0" text="Check balance" textFill="WHITE" AnchorPane.leftAnchor="14.0" />
-                        <Hyperlink layoutX="16.0" layoutY="255.0" text="Go to cart" textFill="WHITE" AnchorPane.leftAnchor="14.0" />
-                        <Hyperlink fx:id="username_display" layoutX="17.0" layoutY="164.0" onAction="#toprofile" text="Username" textFill="WHITE" AnchorPane.leftAnchor="14.0">
+                        <Hyperlink layoutX="14.0" layoutY="209.0" onAction="#tobalance" text="Check balance" textFill="WHITE" AnchorPane.leftAnchor="14.0" />
+                        <Hyperlink layoutX="16.0" layoutY="255.0" onAction="#tocart" text="Go to cart" textFill="WHITE" AnchorPane.leftAnchor="14.0" />
+                        <Hyperlink fx:id="username_current" layoutX="17.0" layoutY="164.0" onAction="#toprofile" text="Username" textFill="WHITE" AnchorPane.leftAnchor="14.0">
                            <font>
                               <Font size="24.0" />
                            </font>

@@ -183,6 +183,7 @@ public class Main {
                 // -------------------------------//
                 Product createdProduct = new Product(productName, description, price, stockCount, salescount, category,
                         activeUser.getUsername());
+                createdProduct.setCategory(category);
                 Product.SaveToFile(createdProduct);
 //                User.SaveToFile(activeUser);
 

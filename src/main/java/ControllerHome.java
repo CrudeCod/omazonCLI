@@ -33,7 +33,7 @@ import javafx.stage.Stage;
 public class ControllerHome extends Controller{
     //fxml
     @FXML
-    private Hyperlink username_display;
+    private Hyperlink username_display, username_current;
     @FXML
     private TextField search,product_name,product_price,product_stock, product_desc;
     @FXML
@@ -64,7 +64,7 @@ public class ControllerHome extends Controller{
     FileChooser upload = new FileChooser();
 
     public void initialize(){
-        username_display.setText(current_user);
+        username_display.setText(username_current);
         try {
             category_select.getItems().addAll(category_list);
         } catch (NullPointerException e0) {
@@ -130,9 +130,15 @@ public class ControllerHome extends Controller{
         ascending_descending = "Ascending";
         changeScene("productlist.fxml");
     }
-    //*favourites
+    //*favourites etc
     public void tofavourite(ActionEvent event) throws IOException{
         changeScene("favourites.fxml");
+    }
+    public void tocart(ActionEvent event) throws IOException{
+        changeScene("cart.fxml");
+    }
+    public void tobalance(ActionEvent event) throws IOException{
+        changeScene("balance.fxml");
     }
 //search method
     public void searchbutton(ActionEvent event) throws IOException{
