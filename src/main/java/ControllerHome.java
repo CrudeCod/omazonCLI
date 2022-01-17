@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -22,7 +24,9 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -33,23 +37,29 @@ public class ControllerHome extends Controller{
     @FXML
     private TextField search,product_name,product_price,product_stock, product_desc;
     @FXML
-    private ChoiceBox<String> category_select, sort_choice, category_choice;
+    private ChoiceBox<String> category_select, sort_choice, category_choice, sort_updown;
     @FXML
     private ImageView profpic, productpic;
     @FXML
     private Label productname, productprice, productdesc, salescount, stockleft, username, email, name_error, price_error, stock_error;
     @FXML
     private ListView<String> list;
+    @FXML
+    private VBox vbox;
 
     private String[] category_list = {"Sports and Outdoor", "Games and Hobbies", "Machines and Gadgets", 
     "Fashion and Accessories (men)",  "Fashion and Accessories (women)", "Home and Living", "Other"};
     private String[] sort_list = {"Alphabetical", "Price"};
     private String[] category_show = {"All", "Sports and Outdoor", "Games and Hobbies", "Machines and Gadgets", 
     "Fashion and Accessories (men)",  "Fashion and Accessories (women)", "Home and Living", "Other"};
+    private String[] updownn_list = {"Ascending", "Descending"};
 
     private static ArrayList<String> list_items;
-    private static String picpath, picname;
+    private static String picpath, sort_chosen, category_chosen, ascending_descending;
     private static Image pic;
+    private static boolean updown;
+
+    Pictures pictures = new Pictures();
 
     ObservableList<String> list_view;
 
@@ -66,28 +76,17 @@ public class ControllerHome extends Controller{
             salescount.setText("Amount sold: "+Integer.toString(active_product.getSalesCount()));
             stockleft.setText("Stock left: "+Integer.toString(active_product.getStockCount()-active_product.getSalesCount()));
             productdesc.setText(active_product.getDescription());
-            //productpic.setImage(active_product.getPicture());
+            productpic.setImage(pic);
         } catch (NullPointerException e1) {
         try {
-            list_items = new ArrayList<String>();
-            list_view = null;
             category_choice.getItems().addAll(category_show);
             sort_choice.getItems().addAll(sort_list);
-            File folder = new File("src/database/PRODUCTS");
-            int length = folder.listFiles().length;
-            Product[] Parr = new Product[length];
-            Parr = active_product.sortAZ(true);
-            for(int i=0; i<length ; i++){
-                String s = Parr[i].getProductName();
-                list_items.add(s);
-            }
-            list_view = FXCollections.observableArrayList(list_items);
-            GridPane pane = new GridPane();
-            Label item = new Label();
-            pane.add(item, 0, 0);
-            list.setItems(list_view);
-            list.setCellFactory(param -> new Cell());
-            //list.getItems().addAll(list_items);
+            sort_updown.getItems().addAll(updownn_list);
+            category_choice.setOnAction(this::sortingmethod);
+            sort_choice.setOnAction(this::sortingmethod);
+            sort_updown.setOnAction(this::sortingmethod);
+
+            sortingaction();
         } catch (NullPointerException e2) {
         try {
             username.setText(active_user.getUsername());
@@ -109,14 +108,20 @@ public class ControllerHome extends Controller{
         changeScene("profile.fxml",5);
     }
     //*products
-    public void toallproducts(ActionEvent event) throws IOException{
-        changeScene("productlist.fxml", 4);
-    }
     public void tomyproducts(ActionEvent event) throws IOException{
         changeScene("myproduct.fxml",1);
     }
     public void toaddproduct(ActionEvent event) throws IOException{
         changeScene("addproduct.fxml",2);
+    }
+    public void toviewproduct(ActionEvent event)throws IOException{
+        changeScene("product.fxml",3);
+    }
+    public void toallproducts(ActionEvent event) throws IOException{
+        sort_chosen = "Alphabetical";
+        category_chosen = "All";
+        ascending_descending = "Ascending";
+        changeScene("productlist.fxml", 4);
     }
     //*favourites
     public void tofavourite(ActionEvent event) throws IOException{
@@ -161,18 +166,8 @@ public class ControllerHome extends Controller{
             
             File file = new File(picpath);
             BufferedImage bi = ImageIO.read(file);
-            try {
-                File picfolder = new File("src/database/PICTURES/PRODUCTS/"+picname);
-                ImageIO.write(bi, "png", picfolder);
-            } catch (IOException e) {
-                System.out.println("The picture is a .jpg");
-            } try {
-                File picfolder = new File("src/database/PICTURES/PRODUCTS/"+picname);
-                ImageIO.write(bi, "jpg", picfolder);
-            } catch (IOException e) {
-                System.out.println("The picture is a .png");
-            }
-
+            File picfolder = new File("src/database/PICTURES/PRODUCTS/"+productName+".png");
+            ImageIO.write(bi, "png", picfolder);
             current_product = productName;
             updateproduct();
             updateuser();
@@ -181,34 +176,111 @@ public class ControllerHome extends Controller{
     }
     public void upload_product(){
         upload.setTitle("Choose picture...");
-        File pic_product = upload.showOpenDialog(new Stage());
+        Stage stg = (Stage) vbox.getScene().getWindow();
+        File pic_product = upload.showOpenDialog(stg);
         if (pic_product!=null){
             picpath = pic_product.getAbsolutePath();
-            picname = pic_product.getName();
             pic = new Image(picpath);
             productpic.setImage(pic);
+            Rectangle clip = new Rectangle(200, 200);
+            if (pic.getHeight()>pic.getWidth()) {
+                productpic.setFitWidth(200);
+                productpic.setFitHeight(pic.getHeight());
+                productpic.setClip(clip);
+            } else {
+                productpic.setFitHeight(200);
+                productpic.setFitWidth(pic.getWidth());
+                productpic.setClip(clip);
+            }
         }
+    }
+    public void sortingmethod(ActionEvent e){
+        ascending_descending = sort_updown.getValue();
+        sort_chosen = sort_choice.getValue();
+        category_chosen = category_choice.getValue();
+        sortingaction();
+    }
+    public void sortingaction(){
+        list_view = null;
+        list_items = new ArrayList<String>();
+        File folder = new File("src/database/PRODUCTS");
+        int length = folder.listFiles().length;
+        Product[] Parr = new Product[length];
+        if (ascending_descending.equalsIgnoreCase("Descending")){
+            updown = true;
+        } else {
+            updown = false;
+        }
+        if (sort_chosen.equalsIgnoreCase("Price")){
+            Parr = active_product.sortPrice(updown);
+        }else{
+            Parr = active_product.sortAZ(updown);
+        }
+        if (category_chosen.equalsIgnoreCase("All")) {
+            for(int i=0; i<length ; i++){
+                String s = Parr[i].getProductName();
+                list_items.add(s);
+            }
+        }else {
+            for(int i=0; i<length ; i++){
+                if (category_chosen.equalsIgnoreCase(Parr[i].getCategory())){
+                    String s = Parr[i].getProductName();
+                    list_items.add(s);
+                }
+            }
+        }
+        list_view = FXCollections.observableArrayList(list_items);
+        GridPane pane = new GridPane();
+        Label item = new Label();
+        pane.add(item, 0, 0);
+        list.setItems(list_view);
+        list.setCellFactory(param -> new Cell());
+        //list.getItems().addAll(list_items);
+
+        list.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                current_product =  (list.getSelectionModel().getSelectedItem());
+                updateproduct();
+                try {
+                    changeScene("product.fxml", 3);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        });
     }
     static class Cell extends ListCell<String>{
         HBox box = new HBox();
         Pane pane = new Pane();
         Label label = new Label("text");
-        //Image pic = new Image("Testu\\PRODUCTS\\pictures\\"+current_product+".png");
-        //ImageView image = new ImageView(pic);
-
+        static Pictures pictures = new Pictures();
+        //private static ImageView image = new ImageView();
+        //private static Image pic_update = pictures.updatepic("picture_placeholder_123");
+        
         public Cell(){
             super();
             label.setTextFill(Color.WHITE);
             pane.setBackground(new Background(new BackgroundFill(Color.rgb(32, 32, 32), null, null)));
-            box.getChildren().addAll(/*image,*/label,pane);
-            box.setBackground(new Background(new BackgroundFill(Color.rgb(32, 32, 32), null, null)));
-            //box.setHgrow(pane, Priority.ALWAYS);
+            try{
+                box.getChildren().addAll(/*image,*/ label, pane);
+                box.setBackground(new Background(new BackgroundFill(Color.rgb(32, 32, 32), null, null)));
+                //box.setHgrow(pane, Priority.ALWAYS);
+            } catch (NullPointerException e){
+                throw e;
+            }
         }
         public void updateItem(String item_, boolean empty_){
             super.updateItem(item_, empty_);
             setText(null);
             setGraphic(null);
+
             if (item_ != null && !empty_) {
+                //pic_update = pictures.updatepic(item_);
+                //image.setImage(pic_update);
+                //image.setFitHeight(50);
                 Product p = (Product) Product.ReadFromFile("src/database/PRODUCTS/"+item_);
                 String price_string = String.format("%.2f",p.getPrice());
                 label.setText("\t"+item_+"\n\tPrice: $ "+price_string+"\n\tCategory: "+p.getCategory());

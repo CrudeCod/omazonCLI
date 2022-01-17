@@ -23,7 +23,7 @@ public class Product implements Serializable{
 
     private String ownerName;
 
-    File Productfolder = new File("src/database/PRODUCTS");
+    static File Productfolder = new File("src/database/PRODUCTS");
     //----------------------------------\\
     public Product(String productName, String description, Double price, int stockCount, int salesCount,String category, String ownerName) {
         this.productName = productName;
@@ -32,7 +32,7 @@ public class Product implements Serializable{
         this.price = price;
         this.stockCount = stockCount;
         this.salesCount = salesCount;
-        setCategory(category);
+        this.category=category;
 
         this.ownerName = ownerName;
      //   this.reviews = reviews;
@@ -95,6 +95,9 @@ public class Product implements Serializable{
 
     public Product[] sortAZ(Boolean descending){//if in case you want to sort it in descending order
         int i = 0;
+        if(Productfolder==null){
+            Productfolder = new File("src/database/PRODUCTS");
+        }
         int length = Productfolder.listFiles().length;
         Product[] Parr = new Product[length];
         for(File fileEntry : Productfolder.listFiles()){
@@ -118,6 +121,9 @@ public class Product implements Serializable{
 
     public Product[] displayCategory(String category, Boolean sortPrice){
         int i = 0;
+        if(Productfolder==null){
+            Productfolder = new File("src/database/PRODUCTS");
+        }
         int length = Productfolder.listFiles().length;
         Product[] Parr = new Product[length];
         for(File fileEntry : Productfolder.listFiles()){
@@ -139,6 +145,9 @@ public class Product implements Serializable{
 
     public Product[] sortPrice(Boolean descending){//if in case you want to sort it in descending order
         int i = 0;
+        if(Productfolder==null){
+            Productfolder = new File("src/database/PRODUCTS");
+        }
         int length = Productfolder.listFiles().length;
         Product[] Parr = new Product[length];
         for(File fileEntry : Productfolder.listFiles()){
