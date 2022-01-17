@@ -79,25 +79,25 @@ public class Controller extends HelloApplication{
         tosignup("login.fxml");
     }
     public void tohome(ActionEvent event)throws IOException{
-        changeScene("home.fxml",1);
+        changeScene("home.fxml");
     }
     //*profile
     public void toprofile(ActionEvent event) throws IOException{
-        changeScene("profile.fxml",5);
+        changeScene("profile.fxml");
     }
     //*products
     public void toallproducts(ActionEvent event) throws IOException{
-        changeScene("productlist.fxml", 4);
+        changeScene("productlist.fxml");
     }
     public void tomyproducts(ActionEvent event) throws IOException{
-        changeScene("myproduct.fxml",1);
+        changeScene("myproduct.fxml");
     }
     public void toaddproduct(ActionEvent event) throws IOException{
-        changeScene("addproduct.fxml",2);
+        changeScene("addproduct.fxml");
     }
     //*favourites
     public void tofavourite(ActionEvent event) throws IOException{
-        changeScene("favourites.fxml",1);
+        changeScene("favourites.fxml");
     }
 
 //login method
@@ -180,6 +180,12 @@ public class Controller extends HelloApplication{
                 existance_=true;
             }else if(!email_register.equals(u.getEmail())){
                 email_taken.setVisible(false);
+            }if (email_register.contains("@") || email_register.contains(".com")) {
+                email_taken.setVisible(false);
+            }else if (email_register.contains("@") && email_register.contains(".com")){
+                email_taken.setVisible(true);
+                email_taken.setText("*Please enter a valid e-mail address");
+                existance_=true;
             }
             //password check
             if(password_register.isBlank()){

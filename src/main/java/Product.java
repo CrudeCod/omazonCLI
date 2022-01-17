@@ -1,8 +1,11 @@
-
-
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Arrays;
-import java.util.regex.*;
+
 public class Product implements Serializable{
     //----------------------------------\\
     //@Serial
@@ -111,7 +114,7 @@ public class Product implements Serializable{
         return Parr;
     }
     @SuppressWarnings("empty-statement")
-    public void SearchForProduct(String productOrSellerName){
+    public String[] SearchForProduct(String productOrSellerName){
         int i = 0;
         int length = Productfolder.listFiles().length;
         String[] productNameList = new String[length];
@@ -132,10 +135,8 @@ public class Product implements Serializable{
             else{
                 System.out.println("Product or Seller Not Found");
             }
-                
         }
-
-            
+        return productNameList;
     }
 
 

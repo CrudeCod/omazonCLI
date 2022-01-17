@@ -1,10 +1,14 @@
-import connect.DB;
-
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import connect.DB;
 
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -54,7 +58,7 @@ public class User implements Serializable {
 
     public static void SaveToFile(User u) { // add filepath as a parameter
         try {
-            FileOutputStream fileOut = new FileOutputStream("src/database/USERNAMES/" + u.Username);
+            FileOutputStream fileOut = new FileOutputStream("src/database/USERNAMES/"+u.Username);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(u);
             objectOut.close();

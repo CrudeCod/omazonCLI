@@ -72,7 +72,7 @@ public class ControllerHome extends Controller{
             productname.setText(active_product.getProductName());
             productprice.setText("Price: $ "+String.format("%.2f",active_product.getPrice()));
             salescount.setText("Amount sold: "+Integer.toString(active_product.getSalesCount()));
-            stockleft.setText("Stock left: "+Integer.toString(active_product.getStockCount()));
+            stockleft.setText("Stock left: "+Integer.toString(active_product.getStockCount()-active_product.getSalesCount()));
             productdesc.setText(active_product.getDescription());
             productpic.setImage(pic);
         } catch (NullPointerException e1) {
@@ -169,7 +169,7 @@ public class ControllerHome extends Controller{
 
                 @Override
                 public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                    display_user = (usr_lst.getSelectionModel().getSelectedItem());
+                    display_user = (list.getSelectionModel().getSelectedItem());
                     try {
                         changeScene("profile.fxml");
                     } catch (IOException e) {
@@ -178,7 +178,7 @@ public class ControllerHome extends Controller{
                 }
             });
             if(productNameList[l].equalsIgnoreCase(str)){
-                temp_prdct.add(productNameList[l]);
+                temp_prdct.add(sellerNameList[l]);
             }
             srch_prdct_view = FXCollections.observableArrayList(temp_prdct);
             GridPane pane_2 = new GridPane();
@@ -191,7 +191,7 @@ public class ControllerHome extends Controller{
 
                 @Override
                 public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                    current_product = (prdct_lst.getSelectionModel().getSelectedItem());
+                    current_product = (list.getSelectionModel().getSelectedItem());
                     updateproduct();
                     try {
                         changeScene("product.fxml");
@@ -350,18 +350,7 @@ public class ControllerHome extends Controller{
 
             if (item_ != null && !empty_) {
                 image.setImage(updatepic(item_));
-                Rectangle clip = new Rectangle(50, 50);
-                if (pic.getHeight()>pic.getWidth()) {
-                    image.setPreserveRatio(true);
-                    image.setFitWidth(50);
-                    image.setFitHeight(pic.getHeight());
-                    image.setClip(clip);
-                } else {
-                    image.setPreserveRatio(true);
-                    image.setFitHeight(50);
-                    image.setFitWidth(pic.getWidth());
-                    image.setClip(clip);
-                }
+                image.setFitHeight(50);
                 Product p = (Product) Product.ReadFromFile("src/database/PRODUCTS/"+item_);
                 String price_string = String.format("%.2f",p.getPrice());
                 label.setText("\t"+item_+"\n\tPrice: $ "+price_string+"\n\tCategory: "+p.getCategory());

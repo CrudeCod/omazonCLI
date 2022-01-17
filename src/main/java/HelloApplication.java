@@ -32,11 +32,11 @@ public class HelloApplication extends Application {
             stage.show();
             stage.getIcons().add(new Image("icon.png"));
         }else if(log==true){
-            changeScene("Home.fxml",1);
+            changeScene("Home.fxml");
         }
     }
 //method for changing scenes
-    public void changeScene(String fxml, int type) throws IOException{
+    public void changeScene(String fxml) throws IOException{
         ControllerHome c1 = new ControllerHome();
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(fxml));
         fxmlLoader.setController(c1);
