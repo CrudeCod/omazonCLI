@@ -553,9 +553,9 @@ public class Main {
                 profitList.add(activeUser.getProfit());
             }
             System.out.println("\t\t\t\t**==============================================================**");
-            System.out.println("\t\t\t\t1. Would you like to view the transaction list?");
-            System.out.println("\t\t\t\t2. Woould you like to view profits for the your products?");
-            System.out.println("\t\t\t\t0. Go Back");
+            System.out.println("\t\t\t\t 1. Would you like to view the transaction list?");
+            System.out.println("\t\t\t\t 2. Woould you like to view profits for your products?");
+            System.out.println("\t\t\t\t 0. Go Back");
             System.out.println("\t\t\t\t**==============================================================**");
             answer=keyboard.next();
             if(answer.equals("1")){
@@ -565,7 +565,7 @@ public class Main {
                 System.out.println("\t\t\t\t The List of Your Product profits: "+ profitList);
             }
             else if(answer.equals(0)){
-                managingAccount=false;
+                isSeller=false;
             }
             else{
                 System.out.println("Please enter a value from the given options");
