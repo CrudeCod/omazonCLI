@@ -1,10 +1,7 @@
 import connect.DB;
 
 import java.io.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class User implements Serializable {
@@ -18,6 +15,7 @@ public class User implements Serializable {
     private double balance;
     private Product[] cartProduct;
     private ArrayList<Order> orderHistory = new ArrayList<Order>();
+    private Favorite favoriteList;
     private int paymentPassword;
     private int ProductCount = 0;
     // Seller
@@ -79,6 +77,11 @@ public class User implements Serializable {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public void initFavorite(String username) {
+        Favorite fav = new Favorite(username);
+        fav.saveToFile(fav);
     }
 
     public int getProductsInCart() {
@@ -366,5 +369,18 @@ public class User implements Serializable {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public Favorite getFavoriteList() {
+        return favoriteList;
+    }
+
+    public void setFavoriteList(Favorite favoriteList) {
+        this.favoriteList = favoriteList;
+    }
+
+    public void addFavorite(Product product) {
+        favoriteList.updateFavorite(product);
+//        this.favoriteList = favoriteList;
     }
 }

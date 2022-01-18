@@ -7,6 +7,7 @@ public class Main {
     public static boolean selling = false;
     public static boolean checkingShoppingCart = false;
     public static boolean checkBalance = false;
+    public static boolean checkFavorite = false;
     public static boolean managingAccount = false;
     public static boolean buyProduct = false;
     public static boolean checkingOrderHistory = false;
@@ -44,6 +45,9 @@ public class Main {
                 } else if (answer.equals("2")) {
                     buyProduct = true;
                     buyProduct();
+                } else if (answer.equals("3")) {
+                    checkFavorite = true;
+                    checkFavorite();
                 } else if (answer.equals("4")) {
                     checkBalance = true;
                     checkBalance();
@@ -100,15 +104,27 @@ public class Main {
 
         activeUser = user.login(username, password);
 
-        File folder = new File("src/database/ORDER");
-
-        for (File fileEntry : folder.listFiles()) {
-            Order p = Order.ReadFromFile(fileEntry.getAbsolutePath());
-            if (p.getPurchaserName().equals(activeUser.getUsername()))
-                activeUser.addOrderHistory(p);
-        }
+//        activeUser.set
 
         loggedIn = activeUser != null;
+
+        if (loggedIn) {
+            File folder = new File("src/database/ORDER");
+            File folderFav = new File("src/database/FAVORITES");
+
+            for (File fileEntry : folder.listFiles()) {
+                Order p = Order.ReadFromFile(fileEntry.getAbsolutePath());
+                if (p.getPurchaserName().equals(activeUser.getUsername()))
+                    activeUser.addOrderHistory(p);
+            }
+
+            for (File fileEntry : folderFav.listFiles()) {
+                Favorite p = Favorite.ReadFromFile(fileEntry.getAbsolutePath());
+                if (p.getUsername().equals(activeUser.getUsername())) {
+                    activeUser.setFavoriteList(p);
+                }
+            }
+        }
     }
 
     public static void register() {
@@ -149,6 +165,7 @@ public class Main {
         paymentPassword = s.nextInt();
 
         user.register(username, email, password, paymentPassword);
+        user.initFavorite(username);
 
         System.out.println("User successfully registered.");
 
@@ -646,6 +663,11 @@ public class Main {
                 }
             }
             buyProduct = false;
+        } else if (option.equals("3")) {
+            activeUser.addFavorite(product);
+            System.out.println("Product added to favorite list");
+        } else {
+            buyProduct();
         }
     }
 
@@ -690,6 +712,17 @@ public class Main {
         System.out.println("- Products: ");
         for (OrderItem item : order.getOrderItems()) {
             System.out.println("\t - " + item.getProduct().getProductName() + " x " + item.getQuantity());
+        }
+    }
+
+    public static void checkFavorite() {
+        Scanner s = new Scanner(System.in);
+        int index = 0;
+        System.out.println("\t\t\t\t**==============================================================**");
+        System.out.println("\t\t\t\tFavorite List");
+        System.out.println("\t\t\t\t**==============================================================**");
+        for (Product product : activeUser.getFavoriteList().getList()) {
+            System.out.println((index+1) + ". " + product.getProductName());
         }
     }
 }
