@@ -1,17 +1,12 @@
 
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.regex.*;
 
-/*
-Purpose:
-This class will contain all the important variables and methods which are important for Products and how they interact with
-both the customer and the seller.
-*/
-
-public class Product<Productfolder> implements Serializable{
+public class Product implements Serializable{
     //----------------------------------\\
     //@Serial
     private static final long serialVersionUID = 1L;
@@ -21,13 +16,13 @@ public class Product<Productfolder> implements Serializable{
     private Double price;
     private int stockCount;
     private int salesCount;
-    private String[] reviews = {""};
+    private ArrayList<String> reviews = new ArrayList<>();
     private Boolean bestSelling;
     private String category;
 
     private String ownerName;
 
-    private static File Productfolder = new File("src/database/PRODUCTS/");
+    private static File Productfolder = new File("src/database/PRODUCTS");
     //----------------------------------\\
     public Product(String productName, String description, Double price, int stockCount, int salesCount,String category, String ownerName) {
         this.productName = productName;
@@ -40,28 +35,23 @@ public class Product<Productfolder> implements Serializable{
     }
     //saveToFile
 
-
-    //This method creates a new file for every product and saves the product information in the file.
     public static void SaveToFile(Product product){   //add filepath as a parameter
         try{
             FileOutputStream fileOut = new FileOutputStream("src/database/PRODUCTS/"+product.productName);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(product);
             objectOut.close();
-            fileOut.close();
         }catch(Exception e){
             e.printStackTrace();
         }
     }
 
-    //This method goes to a file that is specifically made for every product and reads the product information from the file.
     public static Product ReadFromFile(String filepath){
         try {
             FileInputStream fileIn = new FileInputStream(filepath);
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
             Product obj = (Product) objectIn.readObject();
             objectIn.close();
-            fileIn.close();
             return obj;
         }catch(Exception e){
             e.printStackTrace();
@@ -69,8 +59,6 @@ public class Product<Productfolder> implements Serializable{
         }
     }
 
-
-    //puts product into the cart of the user
     public void putIntoCart(User user){
         String[] newShoppingCart = new String[100];
         for(int i=0; i<user.getShoppingCart().length;i++){
@@ -79,7 +67,7 @@ public class Product<Productfolder> implements Serializable{
         newShoppingCart[user.getProductsInCart()]=this.getProductName();
         user.setShoppingCart(newShoppingCart);
         user.incrementProductsInCart();
-        User.SaveToFile(user);
+//        User.SaveToFile(user);
     }
 
     //to display product info, this is temporary, can be changed according to need
@@ -92,18 +80,23 @@ public class Product<Productfolder> implements Serializable{
 //        System.out.println("* Product ratings: * * * * ("+this.salesCount+")");
         System.out.println("* Description:\n"+this.description);
         System.out.println("* Product Reviews:");
-        for (int i =0; i<this.reviews.length;i++) {
-            if (this.reviews[i] == null) continue;
-            else {
-                System.out.println("----------------------------------------------------------------------------------------");
-                System.out.println(this.reviews[i]);
-            }
-        }
+//        if (reviews.get(0) != null && reviews.size() > 0) {
+//            for (int i =0; i<reviews.size();i++) {
+//                if (reviews.get(i) == null) continue;
+//                else {
+//                    System.out.println("----------------------------------------------------------------------------------------");
+//                    System.out.println(reviews.get(i));
+//                }
+//            }
+//        } else {
+//            System.out.println("No reviews yet.");
+//        }
+        System.out.println("No reviews yet.");
+
         System.out.println("----------------------------------------------------------------------------------------");
 
     }
 
-    //This sorts the products in alphabetical order, it can sort from A to Z or from Z to A, depending on the boolean “descending”.
     public Product[] sortAZ(Boolean descending){//if in case you want to sort it in descending order
         int i = 0;
         int length = Productfolder.listFiles().length;
@@ -126,7 +119,6 @@ public class Product<Productfolder> implements Serializable{
         return Parr;
     }
 
-    //This method searches for the object with a similar product name or seller name using the String.matches method.
     @SuppressWarnings("empty-statement")
     public static Product[] SearchForProduct(String productOrSellerName){
         int i = 0;
@@ -161,13 +153,12 @@ public class Product<Productfolder> implements Serializable{
 
     }
 
-    //This displays products with only the same category.
-    public static  Product[] displayCategory(String category, Boolean sortPrice){
+    public static Product[] displayCategory(String category, Boolean sortPrice){
         int i = 0;
         int length = Productfolder.listFiles().length;
         Product[] Parr = new Product[length];
         for(File fileEntry : Productfolder.listFiles()){
-            Product p = Product.ReadFromFile(fileEntry.getAbsolutePath());
+            Product p = (Product) Product.ReadFromFile(fileEntry.getAbsolutePath());
             if (p.category.equalsIgnoreCase(category)){
                 Parr[i] = p;
                 i++;
@@ -175,19 +166,14 @@ public class Product<Productfolder> implements Serializable{
         }
         //sorts according to price
         if (sortPrice){Arrays.sort(Parr, (a,b) -> (int)(a.price - b.price));}
-
         int j = 1;
         for (Product p:Parr){
-            if(p!=null){
-                System.out.println(j+". "+p.productName+ ", RM "+p.price);
-                j++;
-            }
-
+            System.out.println(j+". "+p.productName+ ", RM "+p.price);
+            j++;
         }
         return Parr;
     }
 
-    //This sorts all the products according to price.
     public Product[] sortPrice(Boolean descending){//if in case you want to sort it in descending order
         int i = 0;
         int length = Productfolder.listFiles().length;
@@ -210,7 +196,6 @@ public class Product<Productfolder> implements Serializable{
         return Parr;
     }
 
-    //This method updates the salesCount and stockCount of the product depending on the quantity bought.
     public void updateProduct(int quantityBought){
         int currentStockCount = this.stockCount;
         if (quantityBought>currentStockCount) System.out.println("Warning!: Only "+currentStockCount+" left in Stock");
@@ -221,44 +206,17 @@ public class Product<Productfolder> implements Serializable{
         }
     }
 
-    //This method takes in the customer name and their review and attaches the review to the review array of the product.
-    public void updateProduct(String customerName, String newReview){
-        String[] temp = new String[(this.reviews).length+1];
-        int i = 0;
-        for (String r:this.reviews){
-            temp[i] = r;
-            i++;
-        }
-        temp[i]= customerName+":\n\t"+newReview;
-        this.reviews = temp;
-        SaveToFile(this);
+    public void updateProductReview(String customerName, String newReview){
+//        String[] temp = new String[(this.reviews).length+1];
+//        int i = 0;
+//        for (String r:this.reviews){
+//            temp[i] = r;
+//            i++;
+//        }
+//        temp[i]= customerName+":\n\t"+newReview;
+//        this.reviews = temp;
+//        SaveToFile(this);
     }
-
-    //This prints the best selling products based on salesCount of the product. The number of products shown depends on
-    // the variable top_n.
-    public static Product[] printBestSelling(int top_n){//top_n means top 3, top 4 or top 5 etc best selling products to be displayed
-        int i = 0;
-        int length = Productfolder.listFiles().length;
-        Product[] Parr = new Product[length];
-        for(File fileEntry : Productfolder.listFiles()){
-            Product p = (Product) Product.ReadFromFile(fileEntry.getAbsolutePath());
-            Parr[i] = p;
-            i++;
-        }
-
-        //sorting according to salesCount
-        Arrays.sort(Parr, (a, b) -> (int)(a.salesCount - b.salesCount));
-
-        int j = 1;
-        System.out.println("Top "+top_n+" best selling products");
-        for (Product p:Parr){
-            System.out.println(j+". "+p.productName + ", RM "+p.price);
-            j++;
-            if (j == top_n+1) break;
-        }
-        return Parr;
-    }
-
 
     //----------------------------------\\
 
@@ -300,7 +258,7 @@ public class Product<Productfolder> implements Serializable{
         return salesCount;
     }
 
-    public String[] getReviews() {
+    public ArrayList<String> getReviews() {
         System.out.println("* Product Reviews:");
         for (String review : this.reviews) {
             if (review == null) continue;
@@ -310,9 +268,10 @@ public class Product<Productfolder> implements Serializable{
         System.out.println("----------------------------------------------------------------------------------------");
         return this.reviews;
     }
+
     public void addComment(int reviewNumber,String sellerName, String newComment) {
-        String temp = this.reviews[reviewNumber]+"\n\t\t Comment from Seller("+sellerName+"):\n\t\t\t"+newComment;
-        this.reviews[reviewNumber] = temp;
+        String temp = reviews.get(reviewNumber)+"\n\t\t Comment from Seller("+sellerName+"):\n\t\t\t"+newComment;
+        reviews.set(reviewNumber, temp);
         SaveToFile(this);
     }
 
@@ -355,5 +314,28 @@ public class Product<Productfolder> implements Serializable{
         stockCount-=quantity;
         salesCount++;
         SaveToFile(this);
+    }
+
+    public static Product[] printBestSelling(int top_n){//top_n means top 3, top 4 or top 5 etc best selling products to be displayed
+        int i = 0;
+        int length = Productfolder.listFiles().length;
+        Product[] Parr = new Product[length];
+        for(File fileEntry : Productfolder.listFiles()){
+            Product p = (Product) Product.ReadFromFile(fileEntry.getAbsolutePath());
+            Parr[i] = p;
+            i++;
+        }
+
+        //sorting according to salesCount
+        Arrays.sort(Parr, (a, b) -> (int)(a.salesCount - b.salesCount));
+
+        int j = 1;
+        System.out.println("Top "+top_n+" best selling products");
+        for (Product p:Parr){
+            System.out.println(j+". "+p.productName + ", RM "+p.price);
+            j++;
+            if (j == top_n+1) break;
+        }
+        return Parr;
     }
 }

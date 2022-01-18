@@ -5,31 +5,27 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-/*
-Purpose:
-This class will contain all the important variables and methods which are important for User
-and how they interact with each other as the customer or the seller.
-*/
+import java.util.ArrayList;
 
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
+    File Productfolder = new File("src/database/PRODUCTS/");
     // Basic info
     private String Username;
     private String Password;
     private String email;
-    File Productfolder = new File("src/database/PRODUCTS/");
     //Customer
     private double balance;
     private Product[] cartProduct;
-    private OrderItem[] orderHistory;
+    private ArrayList<Order> orderHistory = new ArrayList<Order>();
+    private Favorite favoriteList;
     private int paymentPassword;
     private int ProductCount = 0;
     // Seller
     private double profit;
     private Product[] productsList = new Product[100];
     // private Product[] productsList;
-    private String[] transactionHistory;
+    private ArrayList<Order> transactionHistory = new ArrayList<Order>();
     private String[] orderNotifications;
     private String[] shoppingCart = new String[100];
 
@@ -43,7 +39,7 @@ public class User implements Serializable {
         this.Password = Password;
         this.email = email;
         this.balance = 0;
-        SaveToFile(this);
+
         // this.cartProduct=cartProduct;
         // this.orderHistory=orderHistory;
         // this.paymentPassword=paymentPassword;
@@ -53,15 +49,18 @@ public class User implements Serializable {
         // this.orderNotifications=orderNotifications;
     }
 
+    public static void initializeShoppingCart(String[] shoppingCart) {
+        for (int i = 0; i < shoppingCart.length; i++) {
+            shoppingCart[i] = "";
+        }
+    }
 
-    //This method creates a new file for every user and saves the user information in the file.
     public static void SaveToFile(User u) { // add filepath as a parameter
         try {
             FileOutputStream fileOut = new FileOutputStream("src/database/USERNAMES/" + u.Username);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(u);
             objectOut.close();
-            fileOut.close();
             System.out.println("Successfully written.");
 
         } catch (Exception e) {
@@ -69,7 +68,6 @@ public class User implements Serializable {
         }
     }
 
-    //This method goes to a file that is specifically made for every user and reads the user information from the file.
     public static User ReadFromFile(String filepath) {
         try {
             FileInputStream fileIn = new FileInputStream(filepath);
@@ -77,12 +75,16 @@ public class User implements Serializable {
             User u = (User) objectIn.readObject();
             // System.out.println("User successfully read from file.");
             objectIn.close();
-            fileIn.close();
             return u;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public void initFavorite(String username) {
+        Favorite fav = new Favorite(username);
+        fav.saveToFile(fav);
     }
 
     public int getProductsInCart() {
@@ -100,7 +102,6 @@ public class User implements Serializable {
 
     public void setShoppingCart(String[] shoppingCart) {
         this.shoppingCart = shoppingCart;
-        SaveToFile(this);
     }
 
     // Basic info
@@ -110,27 +111,23 @@ public class User implements Serializable {
     }
 
     public void setUsername(String newUsername) {
-        User userWithPreviousName = this;
-        File thisProduct = new File("src\\database\\USERNAMES\\"+userWithPreviousName.getUsername());
-        thisProduct.delete();
-        userWithPreviousName.Username = newUsername;
-        SaveToFile(userWithPreviousName);
+        this.Username = newUsername;
     }
 
     public String getPassword() {
         return Password;
     }
+
     public void setPassword(String Password) {
         this.Password = Password;
-        SaveToFile(this);
     }
 
     public String getEmail() {
         return email;
     }
+
     public void setEmail(String email) {
         this.email = email;
-        SaveToFile(this);
     }
 
     // Customer
@@ -138,34 +135,35 @@ public class User implements Serializable {
     public double getBalance() {
         return balance;
     }
+
     public void setBalance(double balance) {
         this.balance = balance;
-        SaveToFile(this);
+        topUpBalance(balance);
     }
 
     public Product[] getCartProduct() {
         return cartProduct;
     }
+
     public void setCartProduct(Product[] cartProduct) {
         this.cartProduct = cartProduct;
         SaveToFile(this);
     }
 
-    public OrderItem[] getOrderHistory() {
-        return orderHistory;
+    public void addOrderHistory(Order order) {
+        this.orderHistory.add(order);
     }
 
-    public void setOrderHistory(OrderItem[] orderHistory) {
-        this.orderHistory = orderHistory;
-        SaveToFile(this);
+    public ArrayList<Order> getOrderHistory() {
+        return orderHistory;
     }
 
     public int getPaymentPassword() {
         return paymentPassword;
     }
+
     public void setPaymentPassword(int paymentPassword) {
         this.paymentPassword = paymentPassword;
-        SaveToFile(this);
     }
 
     // Seller
@@ -173,6 +171,7 @@ public class User implements Serializable {
     public double getProfit() {
         return profit;
     }
+
     public void setProfit(double profit) {
         this.profit = profit;
         SaveToFile(this);
@@ -181,22 +180,25 @@ public class User implements Serializable {
     public Product[] getProductsList() {
         return productsList;
     }
+
     public void setProductsList(Product p) {
-        this.productsList[ProductCount]=p;
+        this.productsList[ProductCount] = p;
         SaveToFile(this);
     }
 
-    public String[] getTransactionHistory() {
+    public ArrayList<Order> getTransactionHistory() {
         return transactionHistory;
     }
-    public void setTransactionHistory(String[] transactionHistory) {
-        this.transactionHistory = transactionHistory;
-        SaveToFile(this);
-    }
+
+//    public void setTransactionHistory(String[] transactionHistory) {
+//        this.transactionHistory = transactionHistory;
+//        SaveToFile(this);
+//    }
 
     public String[] getOrderNotifications() {
         return orderNotifications;
     }
+
     public void setOrderNotifications(String[] orderNotifications) {
         this.orderNotifications = orderNotifications;
         SaveToFile(this);
@@ -205,6 +207,7 @@ public class User implements Serializable {
     public int getProductCount() {
         return ProductCount;
     }
+
     public void setProductCount(int productCount) {
         ProductCount = productCount;
         SaveToFile(this);
@@ -214,7 +217,7 @@ public class User implements Serializable {
         String sql = "INSERT INTO Users(username, email, password, payment_password) VALUES(?,?,?,?)";
 
         try (Connection conn = DB.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
             pstmt.setString(2, email);
             pstmt.setString(3, password);
@@ -230,7 +233,7 @@ public class User implements Serializable {
         ResultSet rs = null;
 
         try (Connection conn = DB.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
             pstmt.setString(2, password);
             rs = pstmt.executeQuery();
@@ -260,7 +263,7 @@ public class User implements Serializable {
         ResultSet rs = null;
 
         try (Connection conn = DB.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
             rs = pstmt.executeQuery();
 
@@ -280,7 +283,7 @@ public class User implements Serializable {
         ResultSet rs = null;
 
         try (Connection conn = DB.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, email);
             rs = pstmt.executeQuery();
 
@@ -300,7 +303,7 @@ public class User implements Serializable {
         String sql = "UPDATE Users SET credit_balance = ? WHERE username = ?";
 
         try (Connection conn = DB.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setDouble(1, this.balance);
             pstmt.setString(2, this.getUsername());
             pstmt.executeUpdate();
@@ -317,7 +320,7 @@ public class User implements Serializable {
         String sql = "UPDATE Users SET username = ? WHERE username = ?";
 
         try (Connection conn = DB.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
             pstmt.setString(2, this.getUsername());
             this.setUsername(username);
@@ -331,7 +334,7 @@ public class User implements Serializable {
         String sql = "UPDATE Users SET password = ? WHERE username = ?";
 
         try (Connection conn = DB.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, password);
             pstmt.setString(2, this.getUsername());
             this.setPassword(password);
@@ -359,7 +362,7 @@ public class User implements Serializable {
         String sql = "UPDATE Users SET email = ? WHERE username = ?";
 
         try (Connection conn = DB.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, email);
             pstmt.setString(2, this.getUsername());
             this.setPassword(email);
@@ -373,11 +376,24 @@ public class User implements Serializable {
         String sql = "DELETE FROM Users WHERE username = ?";
 
         try (Connection conn = DB.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, this.getUsername());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public Favorite getFavoriteList() {
+        return favoriteList;
+    }
+
+    public void setFavoriteList(Favorite favoriteList) {
+        this.favoriteList = favoriteList;
+    }
+
+    public void addFavorite(Product product) {
+        favoriteList.updateFavorite(product);
+//        this.favoriteList = favoriteList;
     }
 }

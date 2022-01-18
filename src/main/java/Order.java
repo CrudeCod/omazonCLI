@@ -4,23 +4,29 @@ import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Random;
 import java.util.UUID;
 
 public class Order implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String id;
     private String purchaserName;
     private String sellerName;
-    private double totalPrice;
+    private static double totalPrice;
     private String deliveryAddress;
     private String trackingNumber = "";
+    private boolean notified = false;
     private OrderItem[] orderItems;
 
     public Order(String purchaserName, String sellerName, String deliveryAddress, OrderItem[] orderItems) {
+        Random rd = new Random();
+
         this.purchaserName = purchaserName;
         this.sellerName = sellerName;
         this.deliveryAddress = deliveryAddress;
         this.orderItems = orderItems;
-        this.id = UUID.randomUUID().toString().replace("-", "");
+        this.id = "#" + rd.nextInt(10000);
         calTotalPrice();
     }
 
@@ -35,9 +41,9 @@ public class Order implements Serializable {
         }
     }
 
-    public Order ReadFromFile(){
+    public static Order ReadFromFile(String filepath){
         try {
-            FileInputStream fileIn = new FileInputStream("src/database/ORDER/"+ this.id);
+            FileInputStream fileIn = new FileInputStream(filepath);
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
             Order obj = (Order) objectIn.readObject();
             objectIn.close();
@@ -105,5 +111,13 @@ public class Order implements Serializable {
 
     public double getTotalPrice() {
         return totalPrice;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public OrderItem[] getOrderItems() {
+        return orderItems;
     }
 }
