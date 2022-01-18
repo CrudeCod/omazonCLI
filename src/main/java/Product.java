@@ -1,6 +1,7 @@
 
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.regex.*;
@@ -15,13 +16,13 @@ public class Product implements Serializable{
     private Double price;
     private int stockCount;
     private int salesCount;
-    private String[] reviews;
+    private ArrayList<String> reviews = new ArrayList<>();
     private Boolean bestSelling;
     private String category;
 
     private String ownerName;
 
-    File Productfolder = new File("src/database/PRODUCTS");
+    private static File Productfolder = new File("src/database/PRODUCTS");
     //----------------------------------\\
     public Product(String productName, String description, Double price, int stockCount, int salesCount,String category, String ownerName) {
         this.productName = productName;
@@ -66,7 +67,7 @@ public class Product implements Serializable{
         newShoppingCart[user.getProductsInCart()]=this.getProductName();
         user.setShoppingCart(newShoppingCart);
         user.incrementProductsInCart();
-        User.SaveToFile(user);
+//        User.SaveToFile(user);
     }
 
     //to display product info, this is temporary, can be changed according to need
@@ -79,10 +80,19 @@ public class Product implements Serializable{
 //        System.out.println("* Product ratings: * * * * ("+this.salesCount+")");
         System.out.println("* Description:\n"+this.description);
         System.out.println("* Product Reviews:");
-        for (String review : this.reviews) {
-            System.out.println("----------------------------------------------------------------------------------------");
-            System.out.println(review);
-        }
+//        if (reviews.get(0) != null && reviews.size() > 0) {
+//            for (int i =0; i<reviews.size();i++) {
+//                if (reviews.get(i) == null) continue;
+//                else {
+//                    System.out.println("----------------------------------------------------------------------------------------");
+//                    System.out.println(reviews.get(i));
+//                }
+//            }
+//        } else {
+//            System.out.println("No reviews yet.");
+//        }
+        System.out.println("No reviews yet.");
+
         System.out.println("----------------------------------------------------------------------------------------");
 
     }
@@ -110,7 +120,7 @@ public class Product implements Serializable{
     }
 
     @SuppressWarnings("empty-statement")
-    public Product[] SearchForProduct(String productOrSellerName){
+    public static Product[] SearchForProduct(String productOrSellerName){
         int i = 0;
         int length = Productfolder.listFiles().length;
         String c = "(.*)";
@@ -143,7 +153,7 @@ public class Product implements Serializable{
 
     }
 
-    public Product[] displayCategory(String category, Boolean sortPrice){
+    public static Product[] displayCategory(String category, Boolean sortPrice){
         int i = 0;
         int length = Productfolder.listFiles().length;
         Product[] Parr = new Product[length];
@@ -196,41 +206,17 @@ public class Product implements Serializable{
         }
     }
 
-    public void updateProduct(String customerName, String newReview){
-        String[] temp = new String[(this.reviews).length+1];
-        int i = 0;
-        for (String r:this.reviews){
-            temp[i] = r;
-            i++;
-        }
-        temp[i]= customerName+":\n\t"+newReview;
-        this.reviews = temp;
-        SaveToFile(this);
+    public void updateProductReview(String customerName, String newReview){
+//        String[] temp = new String[(this.reviews).length+1];
+//        int i = 0;
+//        for (String r:this.reviews){
+//            temp[i] = r;
+//            i++;
+//        }
+//        temp[i]= customerName+":\n\t"+newReview;
+//        this.reviews = temp;
+//        SaveToFile(this);
     }
-
-    public Product[] printBestSelling(int top_n){//top_n means top 3, top 4 or top 5 etc best selling products to be displayed
-        int i = 0;
-        int length = Productfolder.listFiles().length;
-        Product[] Parr = new Product[length];
-        for(File fileEntry : Productfolder.listFiles()){
-            Product p = (Product) Product.ReadFromFile(fileEntry.getAbsolutePath());
-            Parr[i] = p;
-            i++;
-        }
-
-        //sorting according to salesCount
-        Arrays.sort(Parr, (a, b) -> (int)(a.salesCount - b.salesCount));
-
-        int j = 1;
-        System.out.println("Top "+top_n+" best selling products");
-        for (Product p:Parr){
-            System.out.println(j+". "+p.productName + ", RM "+p.price);
-            j++;
-            if (j == top_n+1) break;
-        }
-        return Parr;
-    }
-
 
     //----------------------------------\\
 
@@ -272,7 +258,7 @@ public class Product implements Serializable{
         return salesCount;
     }
 
-    public String[] getReviews() {
+    public ArrayList<String> getReviews() {
         System.out.println("* Product Reviews:");
         for (String review : this.reviews) {
             if (review == null) continue;
@@ -282,9 +268,10 @@ public class Product implements Serializable{
         System.out.println("----------------------------------------------------------------------------------------");
         return this.reviews;
     }
+
     public void addComment(int reviewNumber,String sellerName, String newComment) {
-        String temp = this.reviews[reviewNumber]+"\n\t\t Comment from Seller("+sellerName+"):\n\t\t\t"+newComment;
-        this.reviews[reviewNumber] = temp;
+        String temp = reviews.get(reviewNumber)+"\n\t\t Comment from Seller("+sellerName+"):\n\t\t\t"+newComment;
+        reviews.set(reviewNumber, temp);
         SaveToFile(this);
     }
 
@@ -327,5 +314,28 @@ public class Product implements Serializable{
         stockCount-=quantity;
         salesCount++;
         SaveToFile(this);
+    }
+
+    public static Product[] printBestSelling(int top_n){//top_n means top 3, top 4 or top 5 etc best selling products to be displayed
+        int i = 0;
+        int length = Productfolder.listFiles().length;
+        Product[] Parr = new Product[length];
+        for(File fileEntry : Productfolder.listFiles()){
+            Product p = (Product) Product.ReadFromFile(fileEntry.getAbsolutePath());
+            Parr[i] = p;
+            i++;
+        }
+
+        //sorting according to salesCount
+        Arrays.sort(Parr, (a, b) -> (int)(a.salesCount - b.salesCount));
+
+        int j = 1;
+        System.out.println("Top "+top_n+" best selling products");
+        for (Product p:Parr){
+            System.out.println(j+". "+p.productName + ", RM "+p.price);
+            j++;
+            if (j == top_n+1) break;
+        }
+        return Parr;
     }
 }

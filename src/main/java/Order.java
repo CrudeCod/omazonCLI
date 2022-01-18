@@ -13,7 +13,7 @@ public class Order implements Serializable {
     private String id;
     private String purchaserName;
     private String sellerName;
-    private double totalPrice;
+    private static double totalPrice;
     private String deliveryAddress;
     private String trackingNumber = "";
     private boolean notified = false;
@@ -60,7 +60,7 @@ public class Order implements Serializable {
         }
     }
 
-    public double deductWallet(double balance, String username) {
+    public static double deductWallet(double balance, String username, double totalPrice) {
         balance -= totalPrice;
 
         String sql = "UPDATE Users SET credit_balance = ? WHERE username = ?";

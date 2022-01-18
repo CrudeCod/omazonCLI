@@ -138,7 +138,7 @@ public class User implements Serializable {
 
     public void setBalance(double balance) {
         this.balance = balance;
-        SaveToFile(this);
+        topUpBalance(balance);
     }
 
     public Product[] getCartProduct() {
