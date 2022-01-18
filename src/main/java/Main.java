@@ -10,6 +10,7 @@ public class Main {
     public static boolean checkingShoppingCart=false;
     public static boolean managingAccount = false;
     public static boolean shopping = false;
+    public static boolean isSeller = false;
     public static User activeUser = greetingscreen();
 
     public static File usernameFolder = new File("src\\database\\USERNAMES");
@@ -544,7 +545,7 @@ public class Main {
         }
     }
     public static void checkTransactionsAndProfits(){
-        while(loggedIn&&managingAccount){
+        while(loggedIn&&isSeller){
             Scanner keyboard = new Scanner(System.in);
             String answer;
             ArrayList<Double> profitList = new ArrayList<Double>();
