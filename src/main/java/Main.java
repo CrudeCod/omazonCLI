@@ -4,6 +4,23 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.IOException;
 
+/*
+MOHAMMAD SULAIMAN BIN MOHD HASHIM (17096959)
+ADRIS ICHIRO BIN MOHD FARIS (S2132467)
+MIKAEL KHUDIEV (S2043574)
+MUHAMMAD SHABAN WARIS (S2038756)
+MOHAMMED SAYEED MOHSIN AL AUBASANI (S2102848)
+SHAHZEB ZOAIB (S2042057)
+
+DR NIZAM AYUB
+*/
+
+/*
+Purpose:
+This is the Main Class, where the CLI user interface is implemented
+and it aims to provide a smooth transition from one task to another and also a transition between selling and buying.
+*/
+
 public class Main {
     public static boolean loggedIn=false;
     public static boolean selling=false;
@@ -52,6 +69,7 @@ public class Main {
 
     }
 
+    //Here the top selling products are displayed and the customer can choose from a variety of actions.
     public static void homepage(){
         Scanner s = new Scanner(System.in);
         while (loggedIn&&shopping) {
@@ -114,6 +132,8 @@ public class Main {
             }
         }
     }
+
+    //Here the details of the products are displayed and the customer can choose from a variety of actions.
     public static void productpage(Product p){
         Scanner s = new Scanner(System.in);
         p.productDisplay();
@@ -139,6 +159,7 @@ public class Main {
         }else homepage();
     }
 
+    //Here the customer is given an option of either logging in or registering.
     public static User greetingscreen(){
         Scanner s = new Scanner(System.in);
         User blankUser = new User("Guest","Guest", "Guest");
@@ -158,6 +179,8 @@ public class Main {
         }
         return blankUser;
     }
+
+    //Here the customer logs in using his/her credentials.
     public static User login(){
         String username;
         String password;
@@ -191,6 +214,8 @@ public class Main {
     return blankUser;
 
     }
+
+    //Here a new customer registers using his/her credentials.
     public static void register(){
         Scanner s = new Scanner(System.in);
         System.out.println("\t\t\t\t**==========================================================================**");
@@ -233,6 +258,8 @@ public class Main {
         System.out.println("\t\t\t\t**==============================================================**");
     }
 
+    //If the user wants to sell, he will be redirected to this method where he can perform
+    // all the operations that a seller wants to perform.
     public static void sell(){
         while(loggedIn&&selling) {
             Scanner s = new Scanner(System.in);
@@ -404,6 +431,7 @@ public class Main {
         }
     }
 
+    //This is the shopping cart the customer will be looking at before finalizing their purchase.
     //todo: (Remove product from shopping cart) and (proceed to pay) not available
     public static void shoppingCart(){
         while(loggedIn&&checkingShoppingCart){
@@ -450,6 +478,7 @@ public class Main {
         }
     }
 
+    //Here the user can manage his account and edit username, password etc.
     public static void manageaccount(){
         while(loggedIn&&managingAccount){
             Scanner s = new Scanner(System.in);
@@ -544,6 +573,8 @@ public class Main {
             }
         }
     }
+
+
     public static void checkTransactionsAndProfits(){
         while(loggedIn&&isSeller){
             Scanner keyboard = new Scanner(System.in);

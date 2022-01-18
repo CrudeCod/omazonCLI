@@ -6,6 +6,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/*
+Purpose:
+This class will contain all the important variables and methods which are important for User
+and how they interact with each other as the customer or the seller.
+*/
+
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
     // Basic info
@@ -48,7 +54,7 @@ public class User implements Serializable {
     }
 
 
-
+    //This method creates a new file for every user and saves the user information in the file.
     public static void SaveToFile(User u) { // add filepath as a parameter
         try {
             FileOutputStream fileOut = new FileOutputStream("src/database/USERNAMES/" + u.Username);
@@ -63,6 +69,7 @@ public class User implements Serializable {
         }
     }
 
+    //This method goes to a file that is specifically made for every user and reads the user information from the file.
     public static User ReadFromFile(String filepath) {
         try {
             FileInputStream fileIn = new FileInputStream(filepath);

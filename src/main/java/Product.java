@@ -5,6 +5,12 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.regex.*;
 
+/*
+Purpose:
+This class will contain all the important variables and methods which are important for Products and how they interact with
+both the customer and the seller.
+*/
+
 public class Product<Productfolder> implements Serializable{
     //----------------------------------\\
     //@Serial
@@ -34,6 +40,8 @@ public class Product<Productfolder> implements Serializable{
     }
     //saveToFile
 
+
+    //This method creates a new file for every product and saves the product information in the file.
     public static void SaveToFile(Product product){   //add filepath as a parameter
         try{
             FileOutputStream fileOut = new FileOutputStream("src/database/PRODUCTS/"+product.productName);
@@ -46,6 +54,7 @@ public class Product<Productfolder> implements Serializable{
         }
     }
 
+    //This method goes to a file that is specifically made for every product and reads the product information from the file.
     public static Product ReadFromFile(String filepath){
         try {
             FileInputStream fileIn = new FileInputStream(filepath);
@@ -60,6 +69,8 @@ public class Product<Productfolder> implements Serializable{
         }
     }
 
+
+    //puts product into the cart of the user
     public void putIntoCart(User user){
         String[] newShoppingCart = new String[100];
         for(int i=0; i<user.getShoppingCart().length;i++){
@@ -92,6 +103,7 @@ public class Product<Productfolder> implements Serializable{
 
     }
 
+    //This sorts the products in alphabetical order, it can sort from A to Z or from Z to A, depending on the boolean “descending”.
     public Product[] sortAZ(Boolean descending){//if in case you want to sort it in descending order
         int i = 0;
         int length = Productfolder.listFiles().length;
@@ -114,6 +126,7 @@ public class Product<Productfolder> implements Serializable{
         return Parr;
     }
 
+    //This method searches for the object with a similar product name or seller name using the String.matches method.
     @SuppressWarnings("empty-statement")
     public static Product[] SearchForProduct(String productOrSellerName){
         int i = 0;
@@ -148,6 +161,7 @@ public class Product<Productfolder> implements Serializable{
 
     }
 
+    //This displays products with only the same category.
     public static  Product[] displayCategory(String category, Boolean sortPrice){
         int i = 0;
         int length = Productfolder.listFiles().length;
@@ -173,6 +187,7 @@ public class Product<Productfolder> implements Serializable{
         return Parr;
     }
 
+    //This sorts all the products according to price.
     public Product[] sortPrice(Boolean descending){//if in case you want to sort it in descending order
         int i = 0;
         int length = Productfolder.listFiles().length;
@@ -195,6 +210,7 @@ public class Product<Productfolder> implements Serializable{
         return Parr;
     }
 
+    //This method updates the salesCount and stockCount of the product depending on the quantity bought.
     public void updateProduct(int quantityBought){
         int currentStockCount = this.stockCount;
         if (quantityBought>currentStockCount) System.out.println("Warning!: Only "+currentStockCount+" left in Stock");
@@ -205,6 +221,7 @@ public class Product<Productfolder> implements Serializable{
         }
     }
 
+    //This method takes in the customer name and their review and attaches the review to the review array of the product.
     public void updateProduct(String customerName, String newReview){
         String[] temp = new String[(this.reviews).length+1];
         int i = 0;
@@ -217,6 +234,8 @@ public class Product<Productfolder> implements Serializable{
         SaveToFile(this);
     }
 
+    //This prints the best selling products based on salesCount of the product. The number of products shown depends on
+    // the variable top_n.
     public static Product[] printBestSelling(int top_n){//top_n means top 3, top 4 or top 5 etc best selling products to be displayed
         int i = 0;
         int length = Productfolder.listFiles().length;
