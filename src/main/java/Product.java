@@ -27,7 +27,7 @@ public class Product<Productfolder> implements Serializable{
 
     private String ownerName;
 
-    private static File Productfolder = new File("src/database/PRODUCTS");
+    private static File Productfolder = new File("src/database/PRODUCTS/");
     //----------------------------------\\
     public Product(String productName, String description, Double price, int stockCount, int salesCount,String category, String ownerName) {
         this.productName = productName;
