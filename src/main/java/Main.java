@@ -124,6 +124,8 @@ public class Main {
                     activeUser.setFavoriteList(p);
                 }
             }
+
+            //notified show
         }
     }
 

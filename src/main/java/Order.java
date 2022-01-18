@@ -16,6 +16,7 @@ public class Order implements Serializable {
     private double totalPrice;
     private String deliveryAddress;
     private String trackingNumber = "";
+    private boolean notified = false;
     private OrderItem[] orderItems;
 
     public Order(String purchaserName, String sellerName, String deliveryAddress, OrderItem[] orderItems) {
