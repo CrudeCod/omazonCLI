@@ -1,7 +1,6 @@
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.io.IOException;
 
 public class Main {
     public static boolean loggedIn = false;
@@ -10,6 +9,7 @@ public class Main {
     public static boolean checkBalance = false;
     public static boolean managingAccount = false;
     public static boolean buyProduct = false;
+    public static boolean checkingOrderHistory = false;
     public static User activeUser = null;
 
     public static void main(String[] args) {
@@ -32,8 +32,9 @@ public class Main {
                 System.out.println("\t\t\t\t 3. Check favorite");
                 System.out.println("\t\t\t\t 4. Check balance");
                 System.out.println("\t\t\t\t 5. Check shopping cart");
-                System.out.println("\t\t\t\t 6. Manage account");
-                System.out.println("\t\t\t\t 7. Log out");
+                System.out.println("\t\t\t\t 6. Check order history");
+                System.out.println("\t\t\t\t 7. Manage account");
+                System.out.println("\t\t\t\t 8. Log out");
                 System.out.println("\t\t\t\t 0. EXIT");
                 System.out.println("\t\t\t\t**==============================================================**");
                 String answer = s.next();
@@ -50,9 +51,12 @@ public class Main {
                     checkingShoppingCart = true;
                     shoppingCart();
                 } else if (answer.equals("6")) {
+                    checkingOrderHistory = true;
+                    orderHistory();
+                } else if (answer.equals("7")) {
                     managingAccount = true;
                     manageAccount();
-                } else if (answer.equals("7")) {
+                } else if (answer.equals("8")) {
                     loggedIn = false;
                     activeUser = null;
                 } else if (answer.equals("0")) {
@@ -96,6 +100,14 @@ public class Main {
 
         activeUser = user.login(username, password);
 
+        File folder = new File("src/database/ORDER");
+
+        for (File fileEntry : folder.listFiles()) {
+            Order p = Order.ReadFromFile(fileEntry.getAbsolutePath());
+            if (p.getPurchaserName().equals(activeUser.getUsername()))
+                activeUser.addOrderHistory(p);
+        }
+
         loggedIn = activeUser != null;
     }
 
@@ -132,8 +144,6 @@ public class Main {
             System.out.println("Invalid email address");
             register();
         }
-        System.out.println("Please enter your new password: ");
-        password = s.next();
 
         System.out.println("Please enter your payment password: ");
         paymentPassword = s.nextInt();
@@ -141,6 +151,8 @@ public class Main {
         user.register(username, email, password, paymentPassword);
 
         System.out.println("User successfully registered.");
+
+        login();
     }
 
     public static void mainscreen() {
@@ -215,11 +227,11 @@ public class Main {
                 Scanner scanner = new Scanner(System.in);
                 String ans;
                 int i = 0;
-                for(File fileEntry : folder.listFiles()){
+                for (File fileEntry : folder.listFiles()) {
                     Product p = Product.ReadFromFile(fileEntry.getAbsolutePath());
-                    if(p.getOwnerName().equals(activeUser.getUsername()))
-                        System.out.println((i+1)+". "+p.getProductName());
-                        i++;
+                    if (p.getOwnerName().equals(activeUser.getUsername()))
+                        System.out.println((i + 1) + ". " + p.getProductName());
+                    i++;
                 }
                 System.out.println("\t\t\t\t =======WRITE THE FULL NAME OF PRODUCT TO EDIT=========");
                 System.out.println("\t\t\t\t Enter 0 to go back");
@@ -229,7 +241,7 @@ public class Main {
                 } else {
                     for (File fileEntry : folder.listFiles()) {
                         Product p = Product.ReadFromFile(fileEntry.getAbsolutePath());
-                        if(p.getOwnerName().equals(activeUser.getUsername()) && p.getProductName().equalsIgnoreCase(ans)){
+                        if (p.getOwnerName().equals(activeUser.getUsername()) && p.getProductName().equalsIgnoreCase(ans)) {
                             String description, category;
                             double price;
                             int stockCount;
@@ -284,32 +296,30 @@ public class Main {
         }
 
     }
-        public static void checkTransactionsAndProfits(){
-        while(loggedIn&&managingAccount){
-             Scanner keyboard = new Scanner(System.in);
-             String answer;
-             ArrayList<Double> profitList = new ArrayList<Double>();
-             for(int i=0;i<profitList.size();i++){
-                 profitList.add(activeUser.getProfit());
-             }
-             System.out.println("\t\t\t\t**==============================================================**");
-             System.out.println("\t\t\t\t1. Would you like to view the transaction list?");
-             System.out.println("\t\t\t\t2. Woould you like to view profits for the your products?");
-             System.out.println("\t\t\t\t0. Go Back");
-             System.out.println("\t\t\t\t**==============================================================**");
-             answer=keyboard.next();
-             if(answer.equals("1")){
-                 System.out.println("\t\t\t\tThe List of your Transaction: "+ activeUser.getTransactionHistory());
-             }
-             else if(answer.equals("2")){
-                 System.out.println("\t\t\t\t The List of Your Product profits: "+ profitList);
-             }
-             else if(answer.equals(0)){
-                 managingAccount=false;
-             }
-             else{
-                 System.out.println("Please enter a value from the given options");
-             }
+
+    public static void checkTransactionsAndProfits() {
+        while (loggedIn && managingAccount) {
+            Scanner keyboard = new Scanner(System.in);
+            String answer;
+            ArrayList<Double> profitList = new ArrayList<Double>();
+            for (int i = 0; i < profitList.size(); i++) {
+                profitList.add(activeUser.getProfit());
+            }
+            System.out.println("\t\t\t\t**==============================================================**");
+            System.out.println("\t\t\t\t1. Would you like to view the transaction list?");
+            System.out.println("\t\t\t\t2. Woould you like to view profits for the your products?");
+            System.out.println("\t\t\t\t0. Go Back");
+            System.out.println("\t\t\t\t**==============================================================**");
+            answer = keyboard.next();
+            if (answer.equals("1")) {
+                System.out.println("\t\t\t\tThe List of your Transaction: " + activeUser.getTransactionHistory());
+            } else if (answer.equals("2")) {
+                System.out.println("\t\t\t\t The List of Your Product profits: " + profitList);
+            } else if (answer.equals(0)) {
+                managingAccount = false;
+            } else {
+                System.out.println("Please enter a value from the given options");
+            }
         }
     }
 
@@ -412,7 +422,6 @@ public class Main {
             }
 
 
-
         }
     }
 
@@ -462,12 +471,12 @@ public class Main {
                 answer = s.next();
                 if (answer.equals("1")) {
                     System.out.println("Please enter your password to confirm.");
-                    if(activeUser.getPassword().equals(s.next())){
+                    if (activeUser.getPassword().equals(s.next())) {
                         System.out.println("\t\t\t\t Enter a new username:");
                         String newUsername = s.next();
                         activeUser.updateUsername(newUsername);
                         System.out.println("\t\t\t\t Username changed successfully!");
-                    }else{
+                    } else {
                         System.out.println("Wrong password! Please try again");
                         manageAccount();
                     }
@@ -626,6 +635,7 @@ public class Main {
                     //if balance not enough validator
                     if (!(activeUser.getBalance() < order.getTotalPrice())) {
                         order.saveToFile(order);
+                        activeUser.addOrderHistory(order);
                         activeUser.setBalance(order.deductWallet(activeUser.getBalance(), activeUser.getUsername()));
                         System.out.println("Purchased successfully! Thank you, we will notify the seller to ship out your item.");
                     } else {
@@ -636,6 +646,50 @@ public class Main {
                 }
             }
             buyProduct = false;
+        }
+    }
+
+    public static void orderHistory() {
+        while (loggedIn && checkingOrderHistory) {
+            Scanner s = new Scanner(System.in);
+            int index = 0;
+            System.out.println("\t\t\t\t**==============================================================**");
+            System.out
+                    .println("\t\t\t\tYour latest order history");
+            for (Order order : activeUser.getOrderHistory()) {
+                System.out.println("\t\t\t\t" + (index + 1) + ". " + order.getId() + "\t\t\tRM " + String.format("%.2f", order.getTotalPrice()));
+            }
+            System.out.println("\t\t\t\t0. Go back");
+            System.out.println("\t\t\t\t**==============================================================**");
+
+            int select = s.nextInt();
+
+            if (select == 0) {
+                checkingOrderHistory = false;
+            } else {
+                System.out.println("Select order to view.");
+                if ((select - 1) < activeUser.getOrderHistory().size()) {
+                    orderDetail(activeUser.getOrderHistory().get(select - 1));
+                } else {
+                    System.out.println("Product is not in list.");
+                }
+            }
+        }
+    }
+
+    public static void orderDetail(Order order) {
+        System.out.println(order.getSellerName());
+        Scanner s = new Scanner(System.in);
+        System.out.println("\t\t\t\t**==============================================================**");
+        System.out.println("\t\t\t\tOrder Detail");
+        System.out.println("\t\t\t\t**==============================================================**");
+        System.out.println("- Product name: " + order.getId());
+        System.out.println("- Sold by: " + order.getSellerName());
+        System.out.println("- Price: RM " + String.format("%.2f", order.getTotalPrice()));
+        System.out.println("- Delivery address: " + order.getDeliveryAddress());
+        System.out.println("- Products: ");
+        for (OrderItem item : order.getOrderItems()) {
+            System.out.println("\t - " + item.getProduct().getProductName() + " x " + item.getQuantity());
         }
     }
 }

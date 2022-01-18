@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -16,7 +17,7 @@ public class User implements Serializable {
     //Customer
     private double balance;
     private Product[] cartProduct;
-    private OrderItem[] orderHistory;
+    private ArrayList<Order> orderHistory = new ArrayList<Order>();
     private int paymentPassword;
     private int ProductCount = 0;
     // Seller
@@ -139,13 +140,12 @@ public class User implements Serializable {
         SaveToFile(this);
     }
 
-    public OrderItem[] getOrderHistory() {
-        return orderHistory;
+    public void addOrderHistory(Order order) {
+        this.orderHistory.add(order);
     }
 
-    public void setOrderHistory(OrderItem[] orderHistory) {
-        this.orderHistory = orderHistory;
-        SaveToFile(this);
+    public ArrayList<Order> getOrderHistory() {
+        return orderHistory;
     }
 
     public int getPaymentPassword() {

@@ -1,6 +1,8 @@
 import java.io.*;
 
 public class OrderItem implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private int quantity;
     private Product product;
 
@@ -9,29 +11,29 @@ public class OrderItem implements Serializable {
         this.product = product;
     }
 
-    public static void SaveToFile(Product product){   //add filepath as a parameter
-        try{
-            FileOutputStream fileOut = new FileOutputStream("src/database/ORDER/"+ product.getProductName());
-            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-            objectOut.writeObject(product);
-            objectOut.close();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }
+//    public static void SaveToFile(Product product){   //add filepath as a parameter
+//        try{
+//            FileOutputStream fileOut = new FileOutputStream("src/database/ORDER/"+ product.getProductName());
+//            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+//            objectOut.writeObject(product);
+//            objectOut.close();
+//        }catch(Exception e){
+//            e.printStackTrace();
+//        }
+//    }
 
-    public static Product ReadFromFile(String filepath){
-        try {
-            FileInputStream fileIn = new FileInputStream(filepath);
-            ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-            Product obj = (Product) objectIn.readObject();
-            objectIn.close();
-            return obj;
-        }catch(Exception e){
-            e.printStackTrace();
-            return null;
-        }
-    }
+//    public static OrderItem ReadFromFile(String filepath){
+//        try {
+//            FileInputStream fileIn = new FileInputStream(filepath);
+//            ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+//            OrderItem obj = (OrderItem) objectIn.readObject();
+//            objectIn.close();
+//            return obj;
+//        }catch(Exception e){
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
 
     public int getQuantity() {
         return quantity;
