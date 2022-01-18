@@ -212,7 +212,7 @@ public class Main {
             greetingscreen();
         }
 
-    return blankUser;
+    return null;
 
     }
 
@@ -314,7 +314,7 @@ public class Main {
             }
             if(answer.equals("2")){
 
-                File folder = new File("Testu\\PRODUCTS");
+                File folder = new File("src\\database\\PRODUCTS");
                 System.out.println("\t\t\t\t =======BELOW LIE YOUR PRODUCTS=========");
                 int i = 0;
                 for(File fileEntry : folder.listFiles()){
@@ -326,7 +326,7 @@ public class Main {
                 }
             }
             if(answer.equals("3")){
-                File folder = new File("Testu\\PRODUCTS");
+                File folder = new File("src\\database\\PRODUCTS");
                 System.out.println("\t\t\t\t =======BELOW LIE YOUR PRODUCTS=========");
                 Scanner scanner = new Scanner(System.in);
                 String ans;
@@ -384,7 +384,7 @@ public class Main {
                 }
             }
             if(answer.equals("4")){
-                File folder = new File("Testu\\PRODUCTS");
+                File folder = new File("src\\database\\PRODUCTS");
                 System.out.println("\t\t\t\t =======BELOW LIE YOUR PRODUCTS=========");
                 Scanner scanner = new Scanner(System.in);
                 String ans;
@@ -401,10 +401,13 @@ public class Main {
                 if(ans.equals("0")){
                     sell();
                 }else{
-                    System.out.println("Are you sure that you want to delete your account?");
+                    System.out.println("Are you sure that you want to delete your product?");
                     System.out.println("Please enter your password to confirm.");
-                    if(activeUser.getPassword().equals(s.next())){
-                        File thisUser = new File("Testu\\PRODUCTS\\"+ans);
+                    String s1 = s.next();
+                    System.out.print("Enter the name of the product to delete it: ");
+                    String ans1 = s.next();
+                    if(activeUser.getPassword().equals(s1)){
+                        File thisUser = new File("src\\database\\PRODUCTS"+ans1);
                         if (thisUser.delete()){
                             System.out.println("Successfully deleted your product");
                             sell();
@@ -539,7 +542,7 @@ public class Main {
                         manageaccount();
                     }
                 }
-                if(answer.equals("2")){
+                else if(answer.equals("2")){
                     //todo: make it harder to change the password by requiring the last password
                         System.out.println("Please enter your old password");
                         if (activeUser.getPassword().equals(s.next())) {
@@ -553,7 +556,7 @@ public class Main {
                             manageaccount();
                         }
                 }
-                if(answer.equals("3")){
+                else if(answer.equals("3")){
                     System.out.println("Please enter your password to confirm.");
                     if(activeUser.getPassword().equals(s.next())){
                         System.out.println("Please enter a new email address:");
@@ -587,7 +590,7 @@ public class Main {
                 System.out.println("Are you sure that you want to delete your account?");
                 System.out.println("Please enter your password to confirm.");
                 if(activeUser.getPassword().equals(s.next())){
-                    File thisUser = new File("Testu\\USERNAMES\\"+activeUser.getUsername());
+                    File thisUser = new File("src\\database\\USERNAMES"+activeUser.getUsername());
                     thisUser.delete();
                     System.out.println("Successfully deleted your account");
                     loggedIn=false;
@@ -614,7 +617,7 @@ public class Main {
             }
             System.out.println("\t\t\t\t**==============================================================**");
             System.out.println("\t\t\t\t 1. Would you like to view the transaction list?");
-            System.out.println("\t\t\t\t 2. Woould you like to view profits for your products?");
+            System.out.println("\t\t\t\t 2. Would you like to view profits for your products?");
             System.out.println("\t\t\t\t 0. Go Back");
             System.out.println("\t\t\t\t**==============================================================**");
             answer=keyboard.next();
