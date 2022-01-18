@@ -241,7 +241,7 @@ public class Main {
             System.out.println("\t\t\t\t 2. View existing listings");
             System.out.println("\t\t\t\t 3. Edit existing listings");
             System.out.println("\t\t\t\t 4. Delete existing product");
-            System.out.println("\t\t\t\t 5. Go back");
+            System.out.println("\t\t\t\t 6. Go back");
             System.out.println("\t\t\t\t 0. Exit");
             System.out.println("\t\t\t\t**==============================================================**");
             String answer = s.next();
@@ -390,8 +390,12 @@ public class Main {
                     }
                 }
             }
-            if (answer.equals("5")){
+            if (answer.equals("6")){
                 selling=false;
+            }
+            if(answer.equals("5")){
+                managingAccount = true;
+                checkTransactionsAndProfits();
             }
             if(answer.equals("0")){
                 System.exit(0);
@@ -536,6 +540,34 @@ public class Main {
             }
             if(answer.equals("0")){
                 managingAccount=false;
+            }
+        }
+    }
+    public static void checkTransactionsAndProfits(){
+        while(loggedIn&&managingAccount){
+            Scanner keyboard = new Scanner(System.in);
+            String answer;
+            ArrayList<Double> profitList = new ArrayList<Double>();
+            for(int i=0;i<profitList.size();i++){
+                profitList.add(activeUser.getProfit());
+            }
+            System.out.println("\t\t\t\t**==============================================================**");
+            System.out.println("\t\t\t\t1. Would you like to view the transaction list?");
+            System.out.println("\t\t\t\t2. Woould you like to view profits for the your products?");
+            System.out.println("\t\t\t\t0. Go Back");
+            System.out.println("\t\t\t\t**==============================================================**");
+            answer=keyboard.next();
+            if(answer.equals("1")){
+                System.out.println("\t\t\t\tThe List of your Transaction: "+ activeUser.getTransactionHistory());
+            }
+            else if(answer.equals("2")){
+                System.out.println("\t\t\t\t The List of Your Product profits: "+ profitList);
+            }
+            else if(answer.equals(0)){
+                managingAccount=false;
+            }
+            else{
+                System.out.println("Please enter a value from the given options");
             }
         }
     }

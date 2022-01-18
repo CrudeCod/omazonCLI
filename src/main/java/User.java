@@ -46,9 +46,7 @@ public class User implements Serializable {
         // this.transactionHistory=transactionHistory;
         // this.orderNotifications=orderNotifications;
     }
-    public void decreaseBalance(Product product){
-        this.balance-=product.getPrice();
-    }
+
 
 
     public static void SaveToFile(User u) { // add filepath as a parameter
