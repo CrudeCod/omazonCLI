@@ -763,6 +763,7 @@ public class Main {
 
                 System.out.println("Please enter payment password");
                 int paymentPassword = s.nextInt();
+
                 if (activeUser.getPaymentPassword() == paymentPassword) {
                     OrderItem orderItems = new OrderItem(quantity, product, activeUser);
                     OrderItem[] orders = new OrderItem[]{orderItems};
