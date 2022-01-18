@@ -54,7 +54,7 @@ public class Order implements Serializable {
         }
     }
 
-    public double deductWallet(double balance, String username) {
+    public static double deductWallet(double balance, String username, double totalPrice) {
         balance -= totalPrice;
 
         String sql = "UPDATE Users SET credit_balance = ? WHERE username = ?";

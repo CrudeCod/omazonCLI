@@ -3,10 +3,20 @@ import java.io.*;
 public class OrderItem implements Serializable {
     private int quantity;
     private Product product;
+    private String ownerName;
+    private static File userFolder = new File("src/database/USERNAMES/");
 
-    public OrderItem(int quantity, Product product) {
+    public OrderItem(int quantity, Product product, User activeUser) {
         this.quantity = quantity;
         this.product = product;
+        this.ownerName = product.getOwnerName();
+        User u = User.ReadFromFile("src/database/USERNAMES/"+ownerName);
+
+        activeUser.setBalance(Order.deductWallet(activeUser.getBalance(),ownerName,product.getPrice()));
+        u.setBalance(u.getBalance()+ product.getPrice());
+        User.SaveToFile(activeUser);
+        User.SaveToFile(u);
+
     }
 
     public static void SaveToFile(Product product){   //add filepath as a parameter

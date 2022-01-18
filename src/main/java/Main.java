@@ -80,6 +80,7 @@ public class Main {
                 productpage(searchedProdArray[ans0 - 1]);
             }
             else if (answer.equals("B")) {
+
                 System.out.println("Your current balance is: " + activeUser.getBalance());
                 //todo: give option to change balance
             }
@@ -441,7 +442,35 @@ public class Main {
                 activeUser.setShoppingCart(shop);
             } else if(answer.equals("2")){
                 //todo: implement buying
-                System.out.println("Thank you for buying");
+                String[] shoppingCart = activeUser.getShoppingCart();
+                ArrayList<String> names = new ArrayList<>();
+                //Order order = new Order(activeUser.getUsername(),prod);
+                boolean failedToBuy=false;
+                for(String a : shoppingCart){
+                    for(File f: productFolder.listFiles()){
+                        Product product = Product.ReadFromFile(f.getAbsolutePath());
+                        if(a!=null){
+                            if(a.equals(product.getProductName())){
+
+                                //todo: check if enough money
+                                OrderItem item = new OrderItem(1,product,activeUser);
+
+
+                            }
+                        }
+                    }
+
+
+                }
+
+                if(failedToBuy){
+                    System.out.println("Failed to buy due to insufficient funds.");
+                }else{
+                    String[] shop = new String[100];
+                    activeUser.setShoppingCart(shop);
+                    User.SaveToFile(activeUser);
+                    System.out.println("Thank you for buying");
+                }
             }
             else{
                 shoppingCart();
